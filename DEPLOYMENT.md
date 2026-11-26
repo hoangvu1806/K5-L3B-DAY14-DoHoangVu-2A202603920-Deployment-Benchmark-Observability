@@ -1,42 +1,44 @@
 # Deployment Information
 
 ## Public URL
-`[CHỜ DEPLOY RAILWAY — SẼ CẬP NHẬT SAU BƯỚC 3]`
+https://thungphasanh.up.railway.app
 
 ## Platform
 Railway (Docker + Managed Redis)
 
 ## Test Commands
 
-Đặt `BASE` là Public URL và `AGENT_API_KEY` là key cấu hình trên Railway Dashboard:
+Đặt `BASE=https://thungphasanh.up.railway.app` và `AGENT_API_KEY` là key cấu hình trên Railway Dashboard:
 
 ### 1. Health Check (Liveness — mong đợi `200`)
 ```bash
-curl -sS -o /dev/null -w '%{http_code}\n' "$BASE/health"
-# Expected: 200
+curl -sS -o /dev/null -w '%{http_code}\n' "https://thungphasanh.up.railway.app/health"
+# Output thực tế: 200
+# {"status":"ok","environment":"production","uptime_seconds":310.1}
 ```
 
 ### 2. Readiness Check (Redis connection — mong đợi `200`)
 ```bash
-curl -sS -o /dev/null -w '%{http_code}\n' "$BASE/ready"
-# Expected: 200
+curl -sS -o /dev/null -w '%{http_code}\n' "https://thungphasanh.up.railway.app/ready"
+# Output thực tế: 200
+# {"status":"ready","redis":"ok"}
 ```
 
 ### 3. Authentication Check (không gửi `X-API-Key` — mong đợi `401`)
 ```bash
-curl -sS -o /dev/null -w '%{http_code}\n' -X POST "$BASE/ask" \
+curl -sS -o /dev/null -w '%{http_code}\n' -X POST "https://thungphasanh.up.railway.app/ask" \
   -H 'Content-Type: application/json' \
   -d '{"question":"Hello"}'
-# Expected: 401
+# Output thực tế: 401
 ```
 
 ### 4. API Test (có `X-API-Key` — mong đợi `200`)
 ```bash
-curl -sS -o /dev/null -w '%{http_code}\n' -X POST "$BASE/ask" \
+curl -sS -o /dev/null -w '%{http_code}\n' -X POST "https://thungphasanh.up.railway.app/ask" \
   -H 'Content-Type: application/json' \
   -H "X-API-Key: $AGENT_API_KEY" \
   -d '{"question":"Hello"}'
-# Expected: 200
+# Output thực tế: 200
 ```
 
 ## Environment Variables Set
@@ -49,6 +51,6 @@ curl -sS -o /dev/null -w '%{http_code}\n' -X POST "$BASE/ask" \
 - `MONTHLY_BUDGET_USD` (`10.0`)
 
 ## Screenshots
-- [Deployment dashboard](screenshots/dashboard.png) *(chờ Bước 3)*
-- [Service running](screenshots/running.png) *(chờ Bước 3)*
-- [Test results](screenshots/test.png) *(chờ Bước 3)*
+- [Deployment dashboard](screenshots/dashboard.png)
+- [Service running](screenshots/running.png)
+- [Test results](screenshots/test.png)

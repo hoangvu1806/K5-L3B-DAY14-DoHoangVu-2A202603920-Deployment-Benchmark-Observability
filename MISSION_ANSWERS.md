@@ -159,11 +159,16 @@ X-XSS-Protection: 1; mode=block
 
 ### Exercise 3.1 / 3.2: Deploy Agent Part 6 lên Cloud (Railway)
 
-* **Public URL:** `[CHỜ DEPLOY RAILWAY — SẼ CẬP NHẬT SAU BƯỚC 3]`
+* **Public URL:** `https://thungphasanh.up.railway.app`
+* **Kiểm tra thực tế các endpoint public:**
+  * `GET /health` → `200` (`{"status":"ok","environment":"production","uptime_seconds":310.1}`)
+  * `GET /ready` → `200` (`{"status":"ready","redis":"ok"}`)
+  * `POST /ask` (không có `X-API-Key`) → `401` (`{"detail":"Invalid or missing API key"}`)
+  * `POST /ask` (có `X-API-Key` hợp lệ) → `200`
 * **Screenshots:**
-  * Dashboard & biến môi trường: `screenshots/dashboard.png` *(chờ Bước 3)*
-  * Trạng thái running / logs: `screenshots/running.png` *(chờ Bước 3)*
-  * Kết quả kiểm tra 4 lệnh CP6: `screenshots/test.png` *(chờ Bước 3)*
+  * Dashboard & biến môi trường: [screenshots/dashboard.png](screenshots/dashboard.png)
+  * Trạng thái running / logs: [screenshots/running.png](screenshots/running.png)
+  * Kết quả kiểm tra 4 lệnh CP6: [screenshots/test.png](screenshots/test.png)
 
 ### Exercise 3.2: So sánh `railway.toml` và `render.yaml`
 
