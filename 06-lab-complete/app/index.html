@@ -3,44 +3,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Day 14 Flight Deck — Do Hoang Vu · K5-L3B</title>
+  <title>Day 14 — Production AI Agent · Do Hoang Vu (K5-L3B)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
   <style>
     :root {
-      --paper: #EDF1F5;
-      --surface: #FFFFFF;
-      --surface-alt: #E2E8F0;
-      --ink: #0F1C2E;
-      --muted: #4D6075;
-      --line: #CBD5E1;
-      --line-strong: #94A3B8;
-      --signal: #0052CC;
-      --signal-soft: #E6F0FF;
-      --ok: #0E7C5B;
-      --ok-soft: #E3F7F0;
-      --amber: #D95D00;
-      --amber-soft: #FFF1E6;
-      --danger: #C81E3A;
-      --danger-soft: #FDECEF;
-      --radius-sm: 6px;
-      --radius-md: 12px;
-      --radius-lg: 18px;
-      --shadow-card: 0 1px 2px rgba(15, 28, 46, 0.05), 0 8px 24px rgba(15, 28, 46, 0.04);
-      --shadow-lift: 0 12px 30px rgba(15, 28, 46, 0.10);
-      --font-display: 'Space Grotesk', 'Be Vietnam Pro', sans-serif;
+      --canvas: #F3F6FB;
+      --ink: #0C1524;
+      --ink-soft: #2C3A4F;
+      --muted: #64748B;
+      --glass: rgba(255, 255, 255, 0.72);
+      --glass-strong: rgba(255, 255, 255, 0.88);
+      --glass-tint: rgba(244, 248, 255, 0.65);
+      --surface-recessed: rgba(15, 23, 42, 0.038);
+      --surface-dark: linear-gradient(160deg, #101B2E 0%, #0A111F 100%);
+
+      --accent: #2563EB;
+      --accent-deep: #1D4ED8;
+      --accent-glow: rgba(37, 99, 235, 0.16);
+      --indigo: #4F46E5;
+      --emerald: #059669;
+      --emerald-soft: rgba(5, 150, 105, 0.11);
+      --amber: #D97706;
+      --amber-soft: rgba(217, 119, 6, 0.12);
+      --rose: #E11D48;
+      --rose-soft: rgba(225, 29, 72, 0.11);
+
+      --shadow-xs: 0 1px 2px rgba(12, 21, 36, 0.04), 0 4px 12px rgba(12, 21, 36, 0.03);
+      --shadow-glass:
+        0 1px 2px rgba(12, 21, 36, 0.03),
+        0 12px 32px -6px rgba(15, 35, 66, 0.08),
+        0 24px 60px -18px rgba(37, 99, 235, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.92);
+      --shadow-hover:
+        0 4px 10px rgba(12, 21, 36, 0.04),
+        0 20px 44px -8px rgba(15, 35, 66, 0.13),
+        0 32px 72px -20px rgba(37, 99, 235, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.96);
+      --shadow-dark:
+        0 16px 40px -10px rgba(8, 15, 30, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+      --r-sm: 12px;
+      --r-md: 20px;
+      --r-lg: 28px;
+      --r-pill: 999px;
+
+      --font-display: 'Plus Jakarta Sans', 'Be Vietnam Pro', sans-serif;
       --font-body: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     html {
       scroll-behavior: smooth;
-      background: var(--paper);
+      background: var(--canvas);
       color: var(--ink);
       font-family: var(--font-body);
       line-height: 1.65;
@@ -50,1510 +71,1715 @@
     body {
       min-height: 100vh;
       overflow-x: hidden;
-      background-color: var(--paper);
+      position: relative;
+      background:
+        radial-gradient(65% 50% at 10% 4%, rgba(191, 219, 254, 0.55) 0%, rgba(191, 219, 254, 0) 65%),
+        radial-gradient(55% 45% at 88% 8%, rgba(224, 231, 255, 0.65) 0%, rgba(224, 231, 255, 0) 65%),
+        radial-gradient(50% 45% at 75% 48%, rgba(209, 250, 229, 0.35) 0%, rgba(209, 250, 229, 0) 70%),
+        radial-gradient(60% 50% at 15% 78%, rgba(224, 242, 254, 0.5) 0%, rgba(224, 242, 254, 0) 70%),
+        var(--canvas);
     }
 
-    a { color: var(--signal); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    a { color: var(--accent); text-decoration: none; }
     a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
-      outline: 2px solid var(--signal);
-      outline-offset: 2px;
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
     }
 
     .container {
-      width: min(1180px, 92vw);
+      width: min(1180px, 91vw);
       margin: 0 auto;
     }
 
-    /* ── Sticky Top Instrument Bar ───────────────────────── */
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 60;
-      background: rgba(237, 241, 245, 0.88);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--line);
+    /* Reusable borderless frosted glass surface */
+    .glass {
+      background: var(--glass);
+      backdrop-filter: blur(22px) saturate(150%);
+      -webkit-backdrop-filter: blur(22px) saturate(150%);
+      border: none;
+      box-shadow: var(--shadow-glass);
     }
 
-    .topbar-inner {
+    .glass-strong {
+      background: var(--glass-strong);
+      backdrop-filter: blur(26px) saturate(160%);
+      -webkit-backdrop-filter: blur(26px) saturate(160%);
+      border: none;
+      box-shadow: var(--shadow-glass);
+    }
+
+    /* ── Floating Glass Dock Navigation ──────────────────── */
+    .nav-shell {
+      position: fixed;
+      top: 16px;
+      left: 0;
+      right: 0;
+      z-index: 80;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+      padding: 0 16px;
+    }
+
+    .nav-dock {
+      pointer-events: auto;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      min-height: 62px;
-      padding: 8px 0;
+      gap: 20px;
+      padding: 8px 10px 8px 16px;
+      border-radius: var(--r-pill);
+      background: rgba(255, 255, 255, 0.76);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      box-shadow:
+        0 2px 6px rgba(12, 21, 36, 0.05),
+        0 14px 36px -8px rgba(12, 21, 36, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
     }
 
     .brand {
       display: flex;
       align-items: center;
       gap: 10px;
-      font-family: var(--font-mono);
-      font-size: 13px;
-      font-weight: 600;
+      font-family: var(--font-display);
+      font-size: 13.5px;
+      font-weight: 700;
       color: var(--ink);
-      letter-spacing: 0.02em;
+      letter-spacing: -0.01em;
     }
 
-    .brand-mark {
-      display: inline-grid;
+    .brand-orb {
+      width: 26px;
+      height: 26px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #2563EB 0%, #4F46E5 100%);
+      color: #fff;
+      display: grid;
       place-items: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 7px;
-      background: var(--ink);
-      color: #FFFFFF;
-      font-family: var(--font-display);
-      font-size: 13px;
-      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
     }
 
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 20px;
-      font-size: 13.5px;
-      font-weight: 500;
+      gap: 4px;
     }
 
-    .nav-links a { color: var(--muted); transition: color 0.18s; }
-    .nav-links a:hover { color: var(--ink); text-decoration: none; }
+    .nav-links a {
+      padding: 7px 13px;
+      border-radius: var(--r-pill);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-soft);
+      transition: background 0.18s ease, color 0.18s ease;
+    }
+    .nav-links a:hover {
+      background: rgba(12, 21, 36, 0.055);
+      color: var(--ink);
+    }
 
-    .live-pills {
+    .nav-status {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11.5px;
     }
 
-    .pill {
+    .status-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      color: var(--ink);
+      padding: 6px 11px;
+      border-radius: var(--r-pill);
+      background: rgba(12, 21, 36, 0.045);
+      color: var(--ink-soft);
       white-space: nowrap;
     }
 
-    .dot {
-      width: 8px;
-      height: 8px;
+    .led {
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: var(--line-strong);
+      background: #94A3B8;
+      position: relative;
       flex-shrink: 0;
     }
-    .dot.ok { background: var(--ok); box-shadow: 0 0 0 3px rgba(14, 124, 91, 0.18); }
-    .dot.err { background: var(--danger); box-shadow: 0 0 0 3px rgba(200, 30, 58, 0.18); }
+    .led.ok { background: var(--emerald); box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.22); }
+    .led.err { background: var(--rose); box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.22); }
 
-    .btn-docs {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 12px;
-      border-radius: 8px;
+    .nav-cta {
+      padding: 7px 15px;
+      border-radius: var(--r-pill);
       background: var(--ink);
-      color: #FFFFFF;
+      color: #fff;
       font-family: var(--font-mono);
       font-size: 12px;
       font-weight: 600;
-      transition: transform 0.15s ease, background 0.15s ease;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
     }
-    .btn-docs:hover { background: var(--signal); text-decoration: none; transform: translateY(-1px); }
+    .nav-cta:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3);
+    }
 
-    /* ── Hero Section (Blueprint Drafting Grid) ──────────── */
+    /* ── Hero Section ────────────────────────────────────── */
     .hero {
+      padding: 132px 0 88px;
       position: relative;
-      padding: 64px 0 72px;
-      background-image:
-        linear-gradient(to right, rgba(15, 28, 46, 0.045) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(15, 28, 46, 0.045) 1px, transparent 1px);
-      background-size: 28px 28px;
-      border-bottom: 1px solid var(--line);
     }
 
     .hero-grid {
       display: grid;
-      grid-template-columns: 1.25fr 1fr;
-      gap: 40px;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 48px;
       align-items: center;
     }
 
-    .eyebrow {
+    .hero-kicker {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 5px 12px;
-      border-radius: 999px;
-      background: var(--surface);
-      border: 1px solid var(--line);
+      padding: 6px 14px;
+      border-radius: var(--r-pill);
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-xs), inset 0 1px 0 rgba(255,255,255,0.9);
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
-      color: var(--signal);
-      margin-bottom: 18px;
+      color: var(--accent);
+      margin-bottom: 22px;
     }
 
     .hero h1 {
       font-family: var(--font-display);
-      font-size: clamp(2.2rem, 4.4vw, 3.55rem);
-      line-height: 1.08;
-      letter-spacing: -0.03em;
+      font-size: clamp(2.45rem, 4.7vw, 3.85rem);
+      font-weight: 800;
+      line-height: 1.07;
+      letter-spacing: -0.035em;
       color: var(--ink);
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
 
-    .hero h1 span.accent { color: var(--signal); }
+    .hero h1 .grad-text {
+      background: linear-gradient(125deg, #1D4ED8 0%, #4F46E5 55%, #0EA5E9 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
 
-    .hero-lead {
+    .hero-desc {
       font-size: 16.5px;
-      color: var(--muted);
-      max-width: 58ch;
-      margin-bottom: 26px;
+      color: var(--ink-soft);
+      max-width: 54ch;
+      margin-bottom: 30px;
+      line-height: 1.72;
     }
 
     .hero-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      margin-bottom: 28px;
+      margin-bottom: 34px;
     }
 
-    .btn-primary, .btn-secondary {
+    .btn-primary, .btn-glass {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 12px 20px;
-      border-radius: 10px;
+      gap: 9px;
+      padding: 13px 22px;
+      border-radius: var(--r-pill);
       font-size: 14.5px;
       font-weight: 600;
-      border: 1px solid transparent;
+      border: none;
       cursor: pointer;
-      transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, background 0.2s ease;
     }
 
     .btn-primary {
-      background: var(--signal);
-      color: #FFFFFF;
-      box-shadow: 0 4px 14px rgba(0, 82, 204, 0.24);
+      background: linear-gradient(135deg, #2563EB 0%, #3B5BDB 100%);
+      color: #fff;
+      box-shadow: 0 8px 24px -4px rgba(37, 99, 235, 0.42), inset 0 1px 0 rgba(255,255,255,0.28);
     }
-    .btn-primary:hover { background: #003FA3; transform: translateY(-1px); text-decoration: none; }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px -4px rgba(37, 99, 235, 0.5), inset 0 1px 0 rgba(255,255,255,0.35);
+    }
 
-    .btn-secondary {
-      background: var(--surface);
+    .btn-glass {
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(18px);
       color: var(--ink);
-      border-color: var(--line-strong);
+      box-shadow: var(--shadow-xs), inset 0 1px 0 rgba(255,255,255,0.95);
     }
-    .btn-secondary:hover { border-color: var(--ink); transform: translateY(-1px); text-decoration: none; }
+    .btn-glass:hover {
+      background: #fff;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glass);
+    }
 
-    .hero-meta {
-      display: flex;
+    .author-strip {
+      display: inline-flex;
       flex-wrap: wrap;
-      gap: 18px;
-      padding-top: 18px;
-      border-top: 1px dashed var(--line-strong);
-      font-family: var(--font-mono);
-      font-size: 12.5px;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 18px;
+      border-radius: var(--r-md);
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow-xs), inset 0 1px 0 rgba(255,255,255,0.85);
+      font-size: 13px;
       color: var(--muted);
     }
-    .hero-meta strong { color: var(--ink); }
+    .author-strip strong { color: var(--ink); font-weight: 600; }
+    .author-sep { width: 4px; height: 4px; border-radius: 50%; background: #CBD5E1; }
 
-    /* Live Telemetry Instrument Card */
-    .telemetry-card {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-card);
-      overflow: hidden;
+    /* Hero Live Telemetry Console (Borderless Glass) */
+    .telemetry-stage {
+      border-radius: var(--r-lg);
+      padding: 22px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.82) 0%, rgba(241,247,255,0.68) 100%);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      box-shadow: var(--shadow-glass);
+      display: grid;
+      gap: 16px;
     }
 
-    .telemetry-head {
+    .stage-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 18px;
-      background: var(--ink);
-      color: #FFFFFF;
-      font-family: var(--font-mono);
-      font-size: 12px;
+      padding: 2px 4px;
     }
 
-    .telemetry-head .tag-live {
+    .stage-title {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .live-chip {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      color: #6EE7B7;
+      gap: 7px;
+      padding: 4px 11px;
+      border-radius: var(--r-pill);
+      background: var(--emerald-soft);
+      color: var(--emerald);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
       font-weight: 600;
     }
 
-    .telemetry-body {
-      padding: 18px;
-      display: grid;
-      gap: 14px;
-    }
-
-    .probe-row {
+    .probe-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 12px;
     }
 
-    .probe-box {
-      padding: 12px 14px;
-      border-radius: var(--radius-md);
-      background: var(--paper);
-      border: 1px solid var(--line);
+    .probe-tile {
+      padding: 15px 16px;
+      border-radius: var(--r-md);
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: var(--shadow-xs), inset 0 1px 0 rgba(255,255,255,0.95);
     }
 
-    .probe-label {
+    .probe-head {
       display: flex;
-      align-items: center;
       justify-content: space-between;
       font-family: var(--font-mono);
-      font-size: 11.5px;
+      font-size: 11px;
       color: var(--muted);
       margin-bottom: 6px;
     }
 
-    .probe-val {
-      font-family: var(--font-mono);
-      font-size: 18px;
+    .probe-num {
+      font-family: var(--font-display);
+      font-size: 21px;
       font-weight: 700;
+      letter-spacing: -0.02em;
       color: var(--ink);
     }
-    .probe-val.ok { color: var(--ok); }
-    .probe-val.err { color: var(--danger); }
+    .probe-num.ok { color: var(--emerald); }
+    .probe-num.err { color: var(--rose); }
 
-    .probe-sub {
+    .probe-meta {
       font-family: var(--font-mono);
       font-size: 11px;
       color: var(--muted);
-      margin-top: 2px;
+      margin-top: 3px;
     }
 
-    .kpi-strip {
+    .metric-trio {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
     }
 
-    .kpi-mini {
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: 1px solid var(--line);
-      background: #FAFBFD;
+    .trio-item {
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(241,245,252,0.55) 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 2px 8px rgba(12,21,36,0.03);
     }
 
-    .kpi-mini .k {
+    .trio-item span {
+      display: block;
       font-size: 11px;
       color: var(--muted);
-      display: block;
+      margin-bottom: 2px;
     }
 
-    .kpi-mini .v {
+    .trio-item strong {
       font-family: var(--font-display);
-      font-size: 17px;
+      font-size: 16.5px;
       font-weight: 700;
       color: var(--ink);
     }
 
-    .live-json {
-      background: #0F1C2E;
-      color: #D7E3F4;
-      border-radius: 10px;
-      padding: 12px 14px;
+    .terminal-glass {
+      border-radius: var(--r-md);
+      padding: 15px 17px;
+      background: var(--surface-dark);
+      box-shadow: var(--shadow-dark);
       font-family: var(--font-mono);
       font-size: 11.5px;
-      line-height: 1.5;
+      line-height: 1.58;
+      color: #D8E6F8;
       overflow-x: auto;
       white-space: pre;
     }
 
-    /* ── Common Section Styling ──────────────────────────── */
-    section.block {
-      padding: 76px 0;
-      border-bottom: 1px solid var(--line);
+    /* ── Section Rhythm ──────────────────────────────────── */
+    section.band {
+      padding: 86px 0;
+      position: relative;
     }
 
-    .section-head {
+    .band-head {
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 16px;
-      margin-bottom: 36px;
+      gap: 18px;
+      margin-bottom: 42px;
     }
 
-    .section-tag {
+    .band-label {
       font-family: var(--font-mono);
       font-size: 12px;
       font-weight: 600;
-      color: var(--signal);
-      text-transform: uppercase;
       letter-spacing: 0.08em;
-      margin-bottom: 8px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
     }
 
-    .section-title {
+    .band-title {
       font-family: var(--font-display);
-      font-size: clamp(1.7rem, 3vw, 2.35rem);
-      line-height: 1.15;
-      letter-spacing: -0.025em;
+      font-size: clamp(1.85rem, 3.2vw, 2.55rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.14;
       color: var(--ink);
     }
 
-    .section-desc {
-      max-width: 56ch;
-      color: var(--muted);
+    .band-sub {
+      max-width: 50ch;
       font-size: 15px;
+      color: var(--muted);
     }
 
-    /* ── Interactive Stack Explorer ──────────────────────── */
-    .stack-layout {
+    /* ── Interactive Stack Flow & Glass Inspector ────────── */
+    .stack-stage {
       display: grid;
-      grid-template-columns: 1.25fr 1fr;
-      gap: 24px;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 28px;
       align-items: start;
     }
 
-    .stack-nodes {
+    .flow-board {
+      border-radius: var(--r-lg);
+      padding: 24px;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      gap: 18px;
     }
 
-    .stack-node {
-      text-align: left;
-      padding: 15px 14px;
-      border-radius: var(--radius-md);
-      background: var(--surface);
-      border: 1px solid var(--line);
-      cursor: pointer;
-      transition: border-color 0.16s, transform 0.16s, box-shadow 0.16s, background 0.16s;
-      font-family: inherit;
-    }
-
-    .stack-node:hover {
-      border-color: var(--signal);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-card);
-    }
-
-    .stack-node.active {
-      border-color: var(--signal);
-      background: var(--signal-soft);
-      box-shadow: 0 0 0 1px var(--signal);
-    }
-
-    .stack-node .layer {
+    .flow-group-title {
       font-family: var(--font-mono);
-      font-size: 10.5px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .flow-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .flow-arrow {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: #94A3B8;
+      user-select: none;
+    }
+
+    .stack-chip {
+      flex: 1 1 135px;
+      text-align: left;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: none;
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: var(--shadow-xs), inset 0 1px 0 rgba(255,255,255,0.95);
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .stack-chip:hover {
+      transform: translateY(-3px);
+      background: #fff;
+      box-shadow: var(--shadow-hover);
+    }
+
+    .stack-chip.active {
+      background: linear-gradient(135deg, #2563EB 0%, #4338CA 100%);
+      color: #fff;
+      box-shadow: 0 14px 32px -8px rgba(37, 99, 235, 0.45), inset 0 1px 0 rgba(255,255,255,0.28);
+      transform: translateY(-2px);
+    }
+
+    .stack-chip .role {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 10px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--muted);
       margin-bottom: 4px;
-      display: block;
     }
+    .stack-chip.active .role { color: rgba(255,255,255,0.78); }
 
-    .stack-node.active .layer { color: var(--signal); }
-
-    .stack-node .name {
+    .stack-chip .title {
+      display: block;
       font-family: var(--font-display);
-      font-size: 15.5px;
+      font-size: 14.5px;
       font-weight: 700;
       color: var(--ink);
-      display: block;
-      margin-bottom: 4px;
     }
+    .stack-chip.active .title { color: #fff; }
 
-    .stack-node .brief {
-      font-size: 12.5px;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-
-    .stack-inspector {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: var(--shadow-card);
+    .inspector-card {
+      border-radius: var(--r-lg);
+      padding: 28px;
       position: sticky;
-      top: 82px;
+      top: 90px;
+      background: linear-gradient(155deg, rgba(255,255,255,0.88) 0%, rgba(239,246,255,0.72) 100%);
+      backdrop-filter: blur(26px);
+      box-shadow: var(--shadow-glass);
     }
 
-    .inspector-badge {
+    .inspector-kicker {
       display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: var(--signal-soft);
-      color: var(--signal);
+      padding: 5px 12px;
+      border-radius: var(--r-pill);
+      background: var(--accent-glow);
+      color: var(--accent-deep);
       font-family: var(--font-mono);
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 600;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
-    .stack-inspector h3 {
+    .inspector-card h3 {
       font-family: var(--font-display);
-      font-size: 24px;
-      margin-bottom: 10px;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 16px;
       color: var(--ink);
     }
 
-    .inspector-section {
+    .inspector-block {
       margin-top: 16px;
-      padding-top: 14px;
-      border-top: 1px solid var(--line);
     }
 
-    .inspector-section h4 {
+    .inspector-block h4 {
       font-family: var(--font-mono);
-      font-size: 11.5px;
+      font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.07em;
       color: var(--muted);
       margin-bottom: 6px;
     }
 
-    .inspector-section p {
+    .inspector-block p {
       font-size: 14.5px;
-      color: var(--ink);
+      color: var(--ink-soft);
+      line-height: 1.68;
     }
 
-    .inspector-metric {
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: 10px;
-      background: var(--paper);
+    /* NO left-border accent! Soft luminous recessed pill instead */
+    .inspector-stat {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(79, 70, 229, 0.06) 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
       font-family: var(--font-mono);
       font-size: 12.5px;
       color: var(--ink);
-      border-left: 3px solid var(--signal);
+      line-height: 1.55;
     }
 
-    /* ── Scrubbed Timeline (CP1 → CP8) ───────────────────── */
-    .timeline-wrap {
+    /* ── Journey Timeline (Borderless Editorial Chapters) ── */
+    .journey-wrap {
       position: relative;
-      padding-left: 44px;
+      display: grid;
+      gap: 28px;
     }
 
-    .timeline-rail {
-      position: absolute;
-      left: 15px;
-      top: 12px;
-      bottom: 12px;
-      width: 3px;
-      background: var(--line);
-      border-radius: 3px;
+    .progress-track {
+      position: fixed;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 180px;
+      border-radius: var(--r-pill);
+      background: rgba(12, 21, 36, 0.08);
+      z-index: 50;
+      overflow: hidden;
     }
 
-    .timeline-rail-fill {
+    .progress-fill {
       width: 100%;
       height: 0%;
-      background: var(--signal);
-      border-radius: 3px;
+      border-radius: var(--r-pill);
+      background: linear-gradient(180deg, #2563EB 0%, #4F46E5 50%, #059669 100%);
     }
 
-    .chapter {
-      position: relative;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      margin-bottom: 24px;
-      box-shadow: var(--shadow-card);
+    .bento-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
     }
 
-    .chapter::before {
-      content: "";
-      position: absolute;
-      left: -36px;
-      top: 32px;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: var(--surface);
-      border: 3px solid var(--signal);
-      box-shadow: 0 0 0 4px var(--paper);
+    .story-card {
+      border-radius: var(--r-lg);
+      padding: 32px;
+      background: linear-gradient(155deg, rgba(255,255,255,0.84) 0%, rgba(246,250,255,0.68) 100%);
+      backdrop-filter: blur(24px) saturate(150%);
+      -webkit-backdrop-filter: blur(24px) saturate(150%);
+      box-shadow: var(--shadow-glass);
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
     }
 
-    .chapter-head {
+    .story-card:hover {
+      box-shadow: var(--shadow-hover);
+    }
+
+    .story-top {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 16px;
     }
 
-    .cp-tag {
+    .cp-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px;
+      border-radius: var(--r-pill);
+      background: rgba(37, 99, 235, 0.09);
+      color: var(--accent-deep);
       font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--signal);
-      background: var(--signal-soft);
-      padding: 4px 10px;
-      border-radius: 6px;
-      display: inline-block;
-      margin-bottom: 8px;
+      font-size: 11.5px;
+      font-weight: 600;
     }
 
-    .chapter h3 {
+    .result-pill {
+      padding: 5px 12px;
+      border-radius: var(--r-pill);
+      background: var(--emerald-soft);
+      color: var(--emerald);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .story-card h3 {
       font-family: var(--font-display);
-      font-size: 22px;
-      letter-spacing: -0.02em;
+      font-size: clamp(1.3rem, 2.2vw, 1.65rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    .story-lead {
+      font-size: 14.5px;
+      color: var(--ink-soft);
+      margin-bottom: 20px;
+      max-width: 72ch;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: rgba(12, 21, 36, 0.055);
       color: var(--ink);
     }
 
-    .status-chip {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 600;
-      padding: 5px 11px;
-      border-radius: 999px;
-      background: var(--ok-soft);
-      color: var(--ok);
-      border: 1px solid rgba(14, 124, 91, 0.2);
-    }
-
-    .chapter-body {
-      font-size: 14.5px;
-      color: var(--muted);
-    }
-
-    .chapter-body p + p { margin-top: 10px; }
-
-    .two-col {
+    /* Recessed soft comparison tiles (no borders!) */
+    .soft-grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 18px;
+      gap: 14px;
     }
 
-    .compare-box {
-      padding: 16px;
-      border-radius: var(--radius-md);
-      background: var(--paper);
-      border: 1px solid var(--line);
+    .soft-tile {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.68);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 4px 16px rgba(12,21,36,0.03);
     }
 
-    .compare-box h4 {
+    .soft-tile.rose { background: linear-gradient(145deg, rgba(255,241,244,0.85) 0%, rgba(255,255,255,0.75) 100%); }
+    .soft-tile.emerald { background: linear-gradient(145deg, rgba(236,253,245,0.88) 0%, rgba(255,255,255,0.78) 100%); }
+
+    .soft-tile h4 {
       font-family: var(--font-mono);
-      font-size: 12px;
-      margin-bottom: 8px;
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
     }
+    .soft-tile.rose h4 { color: var(--rose); }
+    .soft-tile.emerald h4 { color: var(--emerald); }
 
-    .compare-box.bad h4 { color: var(--danger); }
-    .compare-box.good h4 { color: var(--ok); }
-
-    .compare-box ul {
+    .soft-tile ul {
       list-style: none;
       display: grid;
-      gap: 6px;
+      gap: 7px;
       font-size: 13.5px;
-      color: var(--ink);
+      color: var(--ink-soft);
     }
 
-    /* Animated Metric Bars */
-    .bar-group {
-      margin-top: 18px;
-      display: grid;
-      gap: 12px;
-    }
+    /* Animated Bars */
+    .bars { display: grid; gap: 16px; }
 
-    .bar-item-head {
+    .bar-meta {
       display: flex;
       justify-content: space-between;
-      font-family: var(--font-mono);
-      font-size: 12.5px;
-      margin-bottom: 6px;
-      color: var(--ink);
+      align-items: baseline;
+      gap: 10px;
+      font-size: 13px;
+      margin-bottom: 7px;
     }
+    .bar-meta span { color: var(--ink-soft); }
+    .bar-meta strong { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink); }
 
-    .bar-track {
+    .bar-rail {
+      position: relative;
       height: 14px;
-      border-radius: 999px;
-      background: var(--surface-alt);
+      border-radius: var(--r-pill);
+      background: rgba(12, 21, 36, 0.065);
       overflow: hidden;
     }
 
     .bar-fill {
       height: 100%;
       width: 0%;
-      border-radius: 999px;
-      background: var(--signal);
+      border-radius: var(--r-pill);
+      background: linear-gradient(90deg, #3B82F6 0%, #2563EB 100%);
     }
-    .bar-fill.muted { background: #64748B; }
-    .bar-fill.ok { background: var(--ok); }
-    .bar-fill.amber { background: var(--amber); }
-    .bar-fill.danger { background: var(--danger); }
+    .bar-fill.slate { background: linear-gradient(90deg, #94A3B8 0%, #64748B 100%); }
+    .bar-fill.emerald { background: linear-gradient(90deg, #10B981 0%, #059669 100%); }
+    .bar-fill.amber { background: linear-gradient(90deg, #F59E0B 0%, #D97706 100%); }
+    .bar-fill.rose { background: linear-gradient(90deg, #FB7185 0%, #E11D48 100%); }
 
-    /* Code HTTP Status Badges */
-    .http-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-top: 18px;
-    }
-
-    .http-card {
-      padding: 14px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--line);
-      background: #FAFBFD;
+    /* Interactive Security Gate Simulator (CP3) */
+    .gate-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
     }
 
-    .http-code {
+    .gate-btn {
+      padding: 8px 14px;
+      border-radius: var(--r-pill);
+      border: none;
+      background: rgba(12, 21, 36, 0.055);
+      color: var(--ink-soft);
       font-family: var(--font-mono);
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s, transform 0.18s, box-shadow 0.18s;
     }
-    .http-code.c200 { color: var(--ok); }
-    .http-code.c401 { color: var(--danger); }
-    .http-code.c429 { color: var(--amber); }
-    .http-code.c402 { color: var(--signal); }
-
-    .http-card p { font-size: 13px; color: var(--muted); }
-
-    /* 12-Criterion Grid */
-    .check-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 18px;
+    .gate-btn:hover { background: rgba(12, 21, 36, 0.1); }
+    .gate-btn.active {
+      background: var(--ink);
+      color: #fff;
+      box-shadow: 0 8px 20px -6px rgba(12, 21, 36, 0.35);
     }
 
-    .check-pill {
+    .gate-stage {
+      padding: 18px 20px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 6px 20px rgba(12,21,36,0.04);
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      border-radius: 9px;
-      background: var(--paper);
-      border: 1px solid var(--line);
-      font-size: 13px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .gate-code {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      min-width: 90px;
+    }
+    .gate-code.c200 { color: var(--emerald); }
+    .gate-code.c401 { color: var(--rose); }
+    .gate-code.c429 { color: var(--amber); }
+    .gate-code.c402 { color: var(--indigo); }
+
+    .gate-detail { flex: 1; min-width: 220px; }
+    .gate-detail strong { display: block; font-size: 14.5px; color: var(--ink); margin-bottom: 3px; }
+    .gate-detail span { font-size: 13px; color: var(--muted); }
+
+    /* Stateless 3-Instance Visual (CP4) */
+    .cluster-visual {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .replica-pill {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: var(--shadow-xs), inset 0 1px 0 rgba(255,255,255,0.95);
+      text-align: center;
+    }
+
+    .replica-pill strong {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--ink);
+    }
+
+    .replica-pill span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .redis-bar {
+      padding: 13px 18px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(225, 29, 72, 0.08) 0%, rgba(249, 115, 22, 0.08) 100%);
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    /* 12/12 Audit Matrix (CP5) */
+    .audit-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .audit-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 11px 13px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.76);
+      box-shadow: var(--shadow-xs), inset 0 1px 0 rgba(255,255,255,0.95);
+      font-size: 12.5px;
       font-weight: 500;
       color: var(--ink);
     }
 
-    .check-mark {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--ok);
-      color: #FFFFFF;
-      display: inline-grid;
+    .tick {
+      width: 20px;
+      height: 20px;
+      border-radius: 7px;
+      background: var(--emerald-soft);
+      color: var(--emerald);
+      display: grid;
       place-items: center;
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 700;
       flex-shrink: 0;
     }
 
-    /* Evidence Screenshot Gallery */
-    .shot-grid {
+    /* Borderless Elevated Screenshot Gallery */
+    .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 14px;
-      margin-top: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px;
+      margin-top: 22px;
     }
 
-    .shot-card {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      cursor: zoom-in;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    .shot-tile {
+      border: none;
+      padding: 10px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: var(--shadow-glass);
       text-align: left;
-      padding: 0;
+      cursor: zoom-in;
       font-family: inherit;
+      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease;
     }
 
-    .shot-card:hover {
-      transform: translateY(-3px);
-      border-color: var(--signal);
-      box-shadow: var(--shadow-lift);
+    .shot-tile:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
     }
 
-    .shot-thumb {
-      width: 100%;
+    .shot-frame {
+      border-radius: 14px;
+      overflow: hidden;
+      background: #0C1524;
       aspect-ratio: 16 / 10;
+      box-shadow: 0 4px 14px rgba(12, 21, 36, 0.1);
+    }
+
+    .shot-frame img {
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       display: block;
-      background: #0F1C2E;
-      border-bottom: 1px solid var(--line);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .shot-cap {
-      padding: 10px 12px;
-    }
+    .shot-tile:hover .shot-frame img { transform: scale(1.03); }
 
-    .shot-cap strong {
+    .shot-meta {
+      padding: 12px 6px 4px;
+    }
+    .shot-meta strong {
       display: block;
       font-family: var(--font-mono);
       font-size: 12px;
       color: var(--ink);
       margin-bottom: 2px;
     }
-
-    .shot-cap span {
+    .shot-meta span {
       display: block;
-      font-size: 12px;
+      font-size: 12.5px;
       color: var(--muted);
     }
 
-    /* Tail Latency Interactive Switcher */
-    .tail-box {
-      margin-top: 18px;
-      padding: 18px;
-      border-radius: var(--radius-md);
-      background: var(--paper);
-      border: 1px solid var(--line);
+    /* Tail Latency Stage with SLO Marker (CP7) */
+    .tail-stage {
+      padding: 22px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 8px 24px rgba(12,21,36,0.04);
+      margin-bottom: 22px;
     }
 
-    .seg-tabs {
+    .tail-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .seg-group {
       display: inline-flex;
-      gap: 6px;
-      background: var(--surface);
+      gap: 4px;
       padding: 4px;
-      border-radius: 10px;
-      border: 1px solid var(--line);
-      margin-bottom: 14px;
+      border-radius: var(--r-pill);
+      background: rgba(12, 21, 36, 0.055);
     }
 
     .seg-btn {
-      padding: 6px 12px;
-      border: 0;
-      border-radius: 7px;
+      padding: 7px 14px;
+      border: none;
+      border-radius: var(--r-pill);
       background: transparent;
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
       color: var(--muted);
       cursor: pointer;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
     }
-
     .seg-btn.active {
-      background: var(--ink);
-      color: #FFFFFF;
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 0 2px 8px rgba(12, 21, 36, 0.1);
     }
 
-    /* Data Tables */
-    .data-table-wrap {
-      overflow-x: auto;
-      margin-top: 18px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-md);
+    .slo-marker {
+      position: absolute;
+      left: 27.8%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: rgba(225, 29, 72, 0.55);
     }
 
-    table.data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13.5px;
-      background: var(--surface);
-    }
-
-    table.data-table th, table.data-table td {
-      padding: 10px 12px;
-      text-align: left;
-      border-bottom: 1px solid var(--line);
-    }
-
-    table.data-table th {
-      background: var(--paper);
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--muted);
-    }
-
-    table.data-table tr:last-child td { border-bottom: 0; }
-    table.data-table td.mono { font-family: var(--font-mono); font-size: 12.5px; }
-
-    .badge-pass {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: var(--ok-soft);
-      color: var(--ok);
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      font-weight: 700;
-    }
-
-    .badge-fail {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: var(--danger-soft);
-      color: var(--danger);
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      font-weight: 700;
-    }
-
-    /* Trace Log Snippet */
-    .trace-box {
-      margin-top: 18px;
-      padding: 16px;
-      border-radius: var(--radius-md);
-      background: #0F1C2E;
+    /* Waterfall Span Visualizer (CP8) */
+    .waterfall {
+      padding: 20px 22px;
+      border-radius: 20px;
+      background: var(--surface-dark);
+      box-shadow: var(--shadow-dark);
       color: #E2ECF8;
+      margin: 20px 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .wf-head {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
       font-family: var(--font-mono);
       font-size: 12px;
-      overflow-x: auto;
+      color: #93C5FD;
     }
 
-    .trace-box .trace-title {
-      color: #93C5FD;
-      margin-bottom: 8px;
+    .wf-row {
+      display: grid;
+      grid-template-columns: 200px 1fr 82px;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .wf-track {
+      height: 10px;
+      border-radius: var(--r-pill);
+      background: rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wf-bar {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: var(--r-pill);
+    }
+
+    .wf-log {
+      margin-top: 4px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #CBD5E1;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    /* Borderless Chaos Table */
+    .chaos-list {
+      display: grid;
+      gap: 8px;
+      margin: 18px 0;
+    }
+
+    .chaos-row {
+      display: grid;
+      grid-template-columns: 70px 1.2fr 1.3fr 90px;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: var(--shadow-xs), inset 0 1px 0 rgba(255,255,255,0.92);
+      font-size: 13.5px;
+    }
+
+    .chaos-tag {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .pill-fire {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: var(--r-pill);
+      background: var(--rose-soft);
+      color: var(--rose);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
       font-weight: 600;
+    }
+
+    .pill-silent {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: var(--r-pill);
+      background: var(--emerald-soft);
+      color: var(--emerald);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .chaos-time {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ink);
     }
 
     /* ── Live API Console ────────────────────────────────── */
     .console-grid {
       display: grid;
-      grid-template-columns: 1fr 1.1fr;
+      grid-template-columns: 1fr 1.15fr;
       gap: 24px;
-      align-items: start;
+      align-items: stretch;
     }
 
-    .console-panel {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: var(--shadow-card);
+    .console-card {
+      border-radius: var(--r-lg);
+      padding: 28px;
     }
 
-    .field-group { margin-bottom: 14px; }
-    .field-group label {
+    .field { margin-bottom: 16px; }
+    .field label {
       display: block;
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
-      color: var(--ink);
-      margin-bottom: 6px;
+      color: var(--ink-soft);
+      margin-bottom: 7px;
     }
 
-    .field-group input, .field-group textarea {
+    .field input, .field textarea {
       width: 100%;
-      padding: 10px 12px;
-      border-radius: 9px;
-      border: 1px solid var(--line-strong);
-      background: #FAFBFD;
+      padding: 12px 15px;
+      border-radius: 14px;
+      border: none;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: inset 0 1px 3px rgba(12, 21, 36, 0.08), 0 1px 0 rgba(255,255,255,0.9);
       color: var(--ink);
       font-family: var(--font-body);
       font-size: 14px;
+      transition: box-shadow 0.18s;
     }
 
-    .field-group input.mono { font-family: var(--font-mono); font-size: 13px; }
+    .field input:focus, .field textarea:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2), inset 0 1px 2px rgba(12, 21, 36, 0.06);
+    }
 
-    .quick-btns {
+    .field input.mono { font-family: var(--font-mono); font-size: 13px; }
+
+    .quick-row {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-top: 12px;
+      margin-top: 14px;
     }
 
-    .btn-mini {
-      padding: 8px 12px;
-      border-radius: 8px;
-      border: 1px solid var(--line-strong);
-      background: var(--paper);
-      color: var(--ink);
+    .chip-btn {
+      padding: 8px 13px;
+      border-radius: var(--r-pill);
+      border: none;
+      background: rgba(12, 21, 36, 0.055);
+      color: var(--ink-soft);
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
       cursor: pointer;
+      transition: background 0.18s, color 0.18s, transform 0.15s;
     }
-    .btn-mini:hover { border-color: var(--signal); color: var(--signal); }
+    .chip-btn:hover { background: rgba(37, 99, 235, 0.12); color: var(--accent-deep); transform: translateY(-1px); }
 
-    .console-output {
-      background: #0F1C2E;
+    .console-screen {
+      border-radius: var(--r-lg);
+      padding: 24px;
+      background: var(--surface-dark);
+      box-shadow: var(--shadow-dark);
       color: #E2ECF8;
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      min-height: 290px;
       font-family: var(--font-mono);
       font-size: 12.5px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
+      min-height: 310px;
     }
 
-    .console-meta {
+    .screen-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.055);
       font-size: 12px;
       color: #94A3B8;
     }
 
-    .console-pre {
+    .screen-pre {
       white-space: pre-wrap;
       word-break: break-word;
-      line-height: 1.55;
-      color: #E2ECF8;
+      line-height: 1.62;
       flex: 1;
     }
 
-    /* ── Lightbox Modal ──────────────────────────────────── */
+    /* ── Lightbox ────────────────────────────────────────── */
     .lightbox {
       position: fixed;
       inset: 0;
       z-index: 120;
-      background: rgba(15, 28, 46, 0.86);
-      backdrop-filter: blur(6px);
+      background: rgba(10, 17, 31, 0.78);
+      backdrop-filter: blur(14px);
       display: none;
       align-items: center;
       justify-content: center;
       padding: 24px;
     }
-
     .lightbox.open { display: flex; }
 
-    .lightbox-inner {
+    .lightbox-panel {
       max-width: min(1120px, 95vw);
       max-height: 92vh;
-      background: var(--surface);
-      border-radius: var(--radius-lg);
+      border-radius: 24px;
       overflow: hidden;
+      background: #0F1A2E;
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.5);
       display: flex;
       flex-direction: column;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
     }
 
-    .lightbox-bar {
+    .lightbox-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      padding: 12px 18px;
-      background: var(--ink);
-      color: #FFFFFF;
+      padding: 14px 20px;
+      color: #E2ECF8;
       font-family: var(--font-mono);
-      font-size: 13px;
+      font-size: 12.5px;
     }
 
     .lightbox-close {
-      background: rgba(255, 255, 255, 0.14);
-      border: 0;
-      color: #FFFFFF;
-      padding: 5px 12px;
-      border-radius: 7px;
+      border: none;
+      padding: 6px 14px;
+      border-radius: var(--r-pill);
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
       font-family: var(--font-mono);
       font-size: 12px;
       cursor: pointer;
     }
-    .lightbox-close:hover { background: var(--danger); }
+    .lightbox-close:hover { background: var(--rose); }
 
     .lightbox-img {
       max-width: 100%;
-      max-height: calc(92vh - 54px);
+      max-height: calc(92vh - 56px);
       object-fit: contain;
-      background: #0B1320;
       display: block;
     }
 
     /* ── Footer ──────────────────────────────────────────── */
     footer {
-      padding: 36px 0 48px;
+      padding: 44px 0 64px;
       font-size: 13.5px;
       color: var(--muted);
     }
 
-    .footer-inner {
+    .footer-glass {
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 14px;
+      gap: 16px;
+      padding: 20px 26px;
+      border-radius: var(--r-lg);
     }
 
     /* ── Responsive ──────────────────────────────────────── */
-    @media (max-width: 960px) {
-      .hero-grid, .stack-layout, .console-grid, .two-col {
-        grid-template-columns: 1fr;
-      }
-      .stack-nodes { grid-template-columns: repeat(2, 1fr); }
-      .http-row { grid-template-columns: repeat(2, 1fr); }
-      .check-grid { grid-template-columns: repeat(2, 1fr); }
-      .nav-links { display: none; }
-      .stack-inspector { position: static; }
+    @media (max-width: 980px) {
+      .hero-grid, .stack-stage, .bento-pair, .console-grid, .soft-grid-2 { grid-template-columns: 1fr; }
+      .audit-grid { grid-template-columns: repeat(2, 1fr); }
+      .nav-links, .progress-track { display: none; }
+      .inspector-card { position: static; }
+      .chaos-row { grid-template-columns: 64px 1fr; }
+      .chaos-time { text-align: left; }
     }
 
     @media (max-width: 600px) {
-      .hero { padding: 40px 0 48px; }
-      section.block { padding: 52px 0; }
-      .timeline-wrap { padding-left: 28px; }
-      .timeline-rail { left: 7px; }
-      .chapter { padding: 20px; }
-      .chapter::before { left: -27px; width: 13px; height: 13px; }
-      .stack-nodes, .check-grid, .kpi-strip, .probe-row { grid-template-columns: 1fr; }
-      .live-pills .pill:nth-child(2) { display: none; }
+      .hero { padding: 104px 0 56px; }
+      section.band { padding: 56px 0; }
+      .story-card { padding: 22px; }
+      .probe-grid, .metric-trio, .cluster-visual, .audit-grid { grid-template-columns: 1fr; }
+      .wf-row { grid-template-columns: 1fr; gap: 4px; }
+      .nav-status .status-pill:nth-child(2) { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation & Live Status -->
-  <header class="topbar">
-    <div class="container topbar-inner">
+  <!-- Floating Glass Dock -->
+  <div class="nav-shell">
+    <nav class="nav-dock" aria-label="Điều hướng chính">
       <div class="brand">
-        <span class="brand-mark">14</span>
-        <span>K5-L3B · FLIGHT DECK</span>
+        <span class="brand-orb">14</span>
+        <span>Day 14 · K5-L3B</span>
       </div>
-      <nav class="nav-links" aria-label="Điều hướng chính">
-        <a href="#stack">Bộ đồ nghề</a>
-        <a href="#journey">Hành trình CP1–CP8</a>
-        <a href="#console">Thử API Live</a>
-      </nav>
-      <div class="live-pills">
-        <span class="pill" id="pill-health"><span class="dot" id="dot-health"></span>/health</span>
-        <span class="pill" id="pill-ready"><span class="dot" id="dot-ready"></span>/ready</span>
-        <a class="btn-docs" href="/docs">/docs ↗</a>
+      <div class="nav-links">
+        <a href="#stack">Stack</a>
+        <a href="#journey">Hành trình</a>
+        <a href="#console">Live API</a>
       </div>
+      <div class="nav-status">
+        <span class="status-pill"><span class="led" id="led-health"></span>/health</span>
+        <span class="status-pill"><span class="led" id="led-ready"></span>/ready</span>
+      </div>
+      <a class="nav-cta" href="/docs">/docs ↗</a>
+    </nav>
+  </div>
+
+  <!-- Right-edge Minimal Scroll Progress -->
+  <div class="progress-track" aria-hidden="true">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="hero-kicker hero-in">AICB-P1 · VINUNIVERSITY 2026 · PRODUCTION LOGBOOK</div>
+        <h1 class="hero-in">Đưa AI Agent từ <span class="grad-text">Localhost ra Cloud</span> &amp; Giám sát thực tế.</h1>
+        <p class="hero-desc hero-in">
+          Hành trình 8 chặng hoàn chỉnh biến một script FastAPI đơn lẻ thành dịch vụ chuẩn production đạt
+          <strong>PASS 12/12</strong>: image multi-stage 160 MB, bảo vệ 3 lớp trên Redis, deploy live trên Railway,
+          benchmark tail latency, eval 23/23 câu và theo dõi thời gian thực với Prometheus, Grafana &amp; Jaeger.
+        </p>
+        <div class="hero-actions hero-in">
+          <a class="btn-primary" href="#journey">Khám phá 8 chặng ↓</a>
+          <a class="btn-glass" href="#console">Kiểm thử API trực tiếp</a>
+        </div>
+        <div class="author-strip hero-in">
+          <span>Học viên <strong>Do Hoang Vu</strong></span>
+          <span class="author-sep"></span>
+          <span>MSSV <strong>2A202603920</strong></span>
+          <span class="author-sep"></span>
+          <span>Lớp <strong>K5-L3B</strong></span>
+        </div>
+      </div>
+
+      <!-- Borderless Glass Telemetry Stage -->
+      <aside class="telemetry-stage hero-in" aria-label="Trạng thái live của server">
+        <div class="stage-top">
+          <span class="stage-title">Live Production Telemetry</span>
+          <span class="live-chip"><span class="led ok"></span><span id="live-env">Đang đo...</span></span>
+        </div>
+
+        <div class="probe-grid">
+          <div class="probe-tile">
+            <div class="probe-head"><span>GET /health</span><span id="health-ms">-- ms</span></div>
+            <div class="probe-num" id="health-code">...</div>
+            <div class="probe-meta" id="health-sub">Liveness probe</div>
+          </div>
+          <div class="probe-tile">
+            <div class="probe-head"><span>GET /ready</span><span id="ready-ms">-- ms</span></div>
+            <div class="probe-num" id="ready-code">...</div>
+            <div class="probe-meta" id="ready-sub">Readiness + Redis</div>
+          </div>
+        </div>
+
+        <div class="metric-trio">
+          <div class="trio-item"><span>Part 6 Audit</span><strong>12/12 PASS</strong></div>
+          <div class="trio-item"><span>Docker Image</span><strong>160 MB</strong></div>
+          <div class="trio-item"><span>Eval Quality</span><strong>23/23 (100%)</strong></div>
+        </div>
+
+        <div class="terminal-glass" id="hero-json">// Đang gọi /health và /ready của chính service này...</div>
+      </aside>
     </div>
   </header>
 
-  <!-- Hero: Thesis + Live Production Telemetry -->
-  <section class="hero">
-    <div class="container hero-grid">
-      <div class="hero-copy">
-        <div class="eyebrow">AICB-P1 · VINUNIVERSITY 2026 · DAY 14 LAB</div>
-        <h1 class="hero-reveal">Từ <span class="accent">Localhost</span> đến Production AI Service.</h1>
-        <p class="hero-lead hero-reveal">
-          Nhật ký kỹ thuật ghi lại toàn bộ 8 chặng biến một AI agent chạy cục bộ thành dịch vụ cloud
-          đạt <strong>PASS 12/12</strong>: đóng gói multi-stage Docker 160 MB, bảo vệ 3 lớp trên Redis,
-          deploy sống trên Railway, benchmark tail latency, kiểm định chất lượng 23/23 câu và giám sát thời gian thực.
-        </p>
-        <div class="hero-actions hero-reveal">
-          <a class="btn-primary" href="#journey">Xem hành trình 8 chặng ↓</a>
-          <a class="btn-secondary" href="#console">Kiểm thử API trực tiếp</a>
-        </div>
-        <div class="hero-meta hero-reveal">
-          <span>Học viên: <strong>Do Hoang Vu</strong></span>
-          <span>MSSV: <strong>2A202603920</strong></span>
-          <span>Lớp: <strong>K5-L3B</strong></span>
-        </div>
-      </div>
-
-      <!-- Live Telemetry Panel (actually fetches /health and /ready from this running server) -->
-      <aside class="telemetry-card hero-reveal" aria-label="Bảng đo thời gian thực">
-        <div class="telemetry-head">
-          <span>LIVE PRODUCTION TELEMETRY</span>
-          <span class="tag-live"><span class="dot ok"></span>ONLINE</span>
-        </div>
-        <div class="telemetry-body">
-          <div class="probe-row">
-            <div class="probe-box">
-              <div class="probe-label"><span>GET /health</span><span id="health-ms">-- ms</span></div>
-              <div class="probe-val" id="health-code">Đang đo...</div>
-              <div class="probe-sub" id="health-sub">Liveness probe</div>
-            </div>
-            <div class="probe-box">
-              <div class="probe-label"><span>GET /ready</span><span id="ready-ms">-- ms</span></div>
-              <div class="probe-val" id="ready-code">Đang đo...</div>
-              <div class="probe-sub" id="ready-sub">Readiness + Redis</div>
-            </div>
-          </div>
-
-          <div class="kpi-strip">
-            <div class="kpi-mini">
-              <span class="k">Part 6 Checker</span>
-              <span class="v">12/12 PASS</span>
-            </div>
-            <div class="kpi-mini">
-              <span class="k">Docker Image</span>
-              <span class="v">160 MB</span>
-            </div>
-            <div class="kpi-mini">
-              <span class="k">Eval v2 + KB</span>
-              <span class="v">23/23 (100%)</span>
-            </div>
-          </div>
-
-          <div class="live-json" id="hero-live-json">// Đang gọi /health và /ready của chính server này...</div>
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <!-- Section 1: Interactive Stack Explorer -->
-  <section class="block" id="stack">
+  <!-- Section 1: Interactive Stack Flow -->
+  <section class="band" id="stack">
     <div class="container">
-      <div class="section-head">
+      <div class="band-head">
         <div>
-          <div class="section-tag">01 · Kiến trúc &amp; Bộ đồ nghề</div>
-          <h2 class="section-title">Mỗi công cụ trong hệ thống làm gì?</h2>
+          <div class="band-label">01 · Kiến trúc hệ thống</div>
+          <h2 class="band-title">Ý nghĩa của từng công cụ trong stack</h2>
         </div>
-        <p class="section-desc">
-          Bấm vào từng khối để xem vai trò thực tế của nó trong hành trình đưa AI agent từ laptop lên production.
-        </p>
+        <p class="band-sub">Chọn một thành phần bất kỳ bên trái để xem vai trò, lý do bắt buộc cần và số liệu đo được trong bài lab.</p>
       </div>
 
-      <div class="stack-layout">
-        <div class="stack-nodes" id="stack-nodes" role="tablist" aria-label="Các thành phần trong stack"></div>
-        <div class="stack-inspector" id="stack-inspector" role="tabpanel" aria-live="polite"></div>
+      <div class="stack-stage">
+        <div class="flow-board glass">
+          <div>
+            <div class="flow-group-title">Request Serving Pipeline</div>
+            <div class="flow-row" id="flow-serving"></div>
+          </div>
+          <div>
+            <div class="flow-group-title">Packaging &amp; Cloud Deployment</div>
+            <div class="flow-row" id="flow-cloud"></div>
+          </div>
+          <div>
+            <div class="flow-group-title">Benchmark &amp; Quality Gate</div>
+            <div class="flow-row" id="flow-bench"></div>
+          </div>
+          <div>
+            <div class="flow-group-title">3 Trụ cột Observability (Metrics · Traces · Alerts)</div>
+            <div class="flow-row" id="flow-obs"></div>
+          </div>
+        </div>
+
+        <div class="inspector-card" id="stack-inspector" aria-live="polite"></div>
       </div>
     </div>
   </section>
 
   <!-- Section 2: Chronological Journey CP1 → CP8 -->
-  <section class="block" id="journey">
+  <section class="band" id="journey">
     <div class="container">
-      <div class="section-head">
+      <div class="band-head">
         <div>
-          <div class="section-tag">02 · Nhật ký thực hành tuần tự</div>
-          <h2 class="section-title">Hành trình 8 chặng (CP1 → CP8)</h2>
+          <div class="band-label">02 · Nhật ký thực hành CP1 → CP8</div>
+          <h2 class="band-title">Tuần tự những gì đã làm &amp; bằng chứng thực tế</h2>
         </div>
-        <p class="section-desc">
-          Mọi con số, log và ảnh chụp dưới đây đều được thu thập trực tiếp từ các lần chạy thực tế của bài lab.
-        </p>
+        <p class="band-sub">Toàn bộ chỉ số, dòng log và 7 ảnh chụp đều lấy trực tiếp từ quá trình chạy bài lab trên máy và trên Railway.</p>
       </div>
 
-      <div class="timeline-wrap" id="timeline">
-        <div class="timeline-rail" aria-hidden="true">
-          <div class="timeline-rail-fill" id="timeline-rail-fill"></div>
+      <div class="journey-wrap">
+        <!-- CP1 + CP2 Bento Pair -->
+        <div class="bento-pair">
+          <article class="story-card reveal-card">
+            <div class="story-top">
+              <span class="cp-pill">CP1 · Part 1 · 12-Factor</span>
+              <span class="result-pill">5+ anti-patterns fixed</span>
+            </div>
+            <h3>Tách biệt môi trường Dev &amp; Production</h3>
+            <p class="story-lead">Loại bỏ thói quen hardcode trên localhost và chuyển toàn bộ cấu hình, log, health probe, shutdown sang chuẩn 12-Factor.</p>
+            <div class="soft-grid-2">
+              <div class="soft-tile rose">
+                <h4>Trước (develop)</h4>
+                <ul>
+                  <li>Hardcode key &amp; DB URL trong code</li>
+                  <li><code>print()</code> in thẳng API key ra log</li>
+                  <li>Không có <code>/health</code>, <code>/ready</code></li>
+                  <li>Cố định <code>localhost:8000</code>, bật <code>reload</code></li>
+                </ul>
+              </div>
+              <div class="soft-tile emerald">
+                <h4>Sau (production)</h4>
+                <ul>
+                  <li>Đọc <code>os.getenv</code> + fail-fast validate</li>
+                  <li>Structured JSON log sạch secret</li>
+                  <li>Tách riêng liveness &amp; readiness</li>
+                  <li>Bind <code>0.0.0.0:$PORT</code> + <code>SIGTERM</code></li>
+                </ul>
+              </div>
+            </div>
+          </article>
+
+          <article class="story-card reveal-card">
+            <div class="story-top">
+              <span class="cp-pill">CP2 · Part 2 · Docker</span>
+              <span class="result-pill">Giảm 85.9% dung lượng</span>
+            </div>
+            <h3>Multi-stage Build &amp; Docker Compose Stack</h3>
+            <p class="story-lead">Stage <code>builder</code> biên dịch thư viện; stage <code>runtime</code> chỉ copy thành phẩm sang <code>python:3.11-slim</code> non-root, chạy cùng cụm Nginx → Agent → Redis &amp; Qdrant.</p>
+            <div class="bars">
+              <div>
+                <div class="bar-meta">
+                  <span>my-agent:develop (python:3.11 full)</span>
+                  <strong>1.15 GB (1,100.8 MiB)</strong>
+                </div>
+                <div class="bar-rail"><div class="bar-fill slate anim-bar" data-w="100%"></div></div>
+              </div>
+              <div>
+                <div class="bar-meta">
+                  <span>my-agent:advanced (multi-stage slim)</span>
+                  <strong>163 MB (−85.9%)</strong>
+                </div>
+                <div class="bar-rail"><div class="bar-fill emerald anim-bar" data-w="14.1%"></div></div>
+              </div>
+              <div>
+                <div class="bar-meta">
+                  <span>Part 6 Final Image (non-root + HEALTHCHECK)</span>
+                  <strong>160 MB (≪ 500 MB)</strong>
+                </div>
+                <div class="bar-rail"><div class="bar-fill anim-bar" data-w="13.8%"></div></div>
+              </div>
+            </div>
+          </article>
         </div>
 
-        <!-- CP1 -->
-        <article class="chapter">
-          <div class="chapter-head">
-            <div>
-              <span class="cp-tag">CP1 · PART 1 · 12-FACTOR APP</span>
-              <h3>Nhận diện anti-pattern &amp; chuẩn hóa Production</h3>
+        <!-- CP3 + CP4 Bento Pair -->
+        <div class="bento-pair">
+          <article class="story-card reveal-card">
+            <div class="story-top">
+              <span class="cp-pill">CP3 · Part 4 · API Security</span>
+              <span class="result-pill">3 lớp bảo vệ</span>
             </div>
-            <span class="status-chip">Hoàn thành</span>
-          </div>
-          <div class="chapter-body">
-            <p>So sánh trực tiếp bản <code>develop/app.py</code> ("chạy được trên laptop") với <code>production/app.py</code> tuân thủ nguyên tắc 12-Factor để loại bỏ các lỗi chết người trước khi đóng gói.</p>
-          </div>
-          <div class="two-col">
-            <div class="compare-box bad">
-              <h4>Anti-patterns ở bản develop</h4>
-              <ul>
-                <li>• Hardcode <code>OPENAI_API_KEY</code> &amp; <code>DATABASE_URL</code> trong code</li>
-                <li>• Dùng <code>print()</code> in thẳng API key ra stdout</li>
-                <li>• Không có <code>/health</code> và <code>/ready</code></li>
-                <li>• Cố định <code>localhost:8000</code> và bật <code>reload=True</code></li>
-              </ul>
+            <h3>Xác thực, Rate Limit &amp; Cost Guard</h3>
+            <p class="story-lead">Bấm thử từng kịch bản để xem request đi qua 3 lớp phòng thủ đã kiểm chứng bằng <code>curl -i</code> (JWT <code>student</code> giới hạn 10 req/phút, Redis Cost Guard chặn <code>402</code>).</p>
+            <div class="gate-controls" role="tablist">
+              <button type="button" class="gate-btn active" data-gate="401">Thiếu key</button>
+              <button type="button" class="gate-btn" data-gate="200">Hợp lệ (#1–#10)</button>
+              <button type="button" class="gate-btn" data-gate="429">Quá 10 req/m (#11)</button>
+              <button type="button" class="gate-btn" data-gate="402">Hết ngân sách</button>
             </div>
-            <div class="compare-box good">
-              <h4>Chuẩn hóa ở bản production</h4>
-              <ul>
-                <li>• Đọc cấu hình qua <code>os.getenv</code> + fail-fast <code>validate()</code></li>
-                <li>• Ghi log dạng JSON cấu trúc, không rò rỉ secret</li>
-                <li>• Có liveness <code>/health</code> và readiness <code>/ready</code></li>
-                <li>• Bind <code>0.0.0.0:$PORT</code> + <code>lifespan</code> xử lý <code>SIGTERM</code></li>
-              </ul>
-            </div>
-          </div>
-        </article>
-
-        <!-- CP2 -->
-        <article class="chapter">
-          <div class="chapter-head">
-            <div>
-              <span class="cp-tag">CP2 · PART 2 · DOCKER CONTAINERIZATION</span>
-              <h3>Đóng gói Multi-stage &amp; tối ưu 85.9% dung lượng image</h3>
-            </div>
-            <span class="status-chip">1.15 GB → 163 MB</span>
-          </div>
-          <div class="chapter-body">
-            <p>Tách <code>Dockerfile</code> thành 2 stage: <code>builder</code> cài trình biên dịch &amp; thư viện, còn <code>runtime</code> bắt đầu lại từ <code>python:3.11-slim</code> sạch với user <code>non-root</code>. Đồng thời chạy cụm 4 service (Nginx → Agent → Redis &amp; Qdrant) qua mạng nội bộ Docker Compose.</p>
-          </div>
-          <div class="bar-group">
-            <div>
-              <div class="bar-item-head">
-                <span>my-agent:develop (python:3.11 full, single-stage)</span>
-                <strong>1.15 GB (1,100.84 MiB)</strong>
+            <div class="gate-stage" id="gate-stage">
+              <div class="gate-code c401" id="gate-code">401</div>
+              <div class="gate-detail">
+                <strong id="gate-title">Unauthorized — Chặn tại lớp Authentication</strong>
+                <span id="gate-desc">Thiếu hoặc sai header X-API-Key bị từ chối ngay trước khi chạm tới LLM.</span>
               </div>
-              <div class="bar-track"><div class="bar-fill muted anim-bar" data-width="100%"></div></div>
             </div>
-            <div>
-              <div class="bar-item-head">
-                <span>my-agent:advanced (python:3.11-slim, multi-stage + non-root)</span>
-                <strong>163 MB (155.34 MiB · −85.9%)</strong>
-              </div>
-              <div class="bar-track"><div class="bar-fill ok anim-bar" data-width="14.1%"></div></div>
+          </article>
+
+          <article class="story-card reveal-card">
+            <div class="story-top">
+              <span class="cp-pill">CP4 · Part 5 · Scaling</span>
+              <span class="result-pill">3 replicas · Stateless</span>
             </div>
+            <h3>Scale ngang 3 instance dùng chung sổ Redis</h3>
+            <p class="story-lead">Chạy <code>--scale agent=3</code> sau Nginx Load Balancer và test với <code>test_stateless.py</code>: 5 request được chia đều cho 3 container nhưng giữ nguyên 10/10 tin nhắn lịch sử.</p>
+            <div class="cluster-visual">
+              <div class="replica-pill"><strong>instance-604b6b</strong><span>Req #1, #4</span></div>
+              <div class="replica-pill"><strong>instance-97da3f</strong><span>Req #2, #5</span></div>
+              <div class="replica-pill"><strong>instance-61e702</strong><span>Req #3 + History</span></div>
+            </div>
+            <div class="redis-bar">Redis Shared State · Session bd317508-... · 10/10 messages preserved</div>
+          </article>
+        </div>
+
+        <!-- CP5 Full-Width Audit Matrix -->
+        <article class="story-card reveal-card">
+          <div class="story-top">
+            <span class="cp-pill">CP5 · Part 6 · Final Project (60/120 điểm)</span>
+            <span class="result-pill">PASS 12/12 · 43/43 checks · 1.0s graceful stop</span>
+          </div>
+          <h3>Production Agent hoàn chỉnh trong <code>06-lab-complete/</code></h3>
+          <p class="story-lead">Ráp toàn bộ kiến thức CP1–CP4 thành dịch vụ chạy 2 worker, vượt qua 100% kiểm tra tĩnh, runtime (ngắt Redis, restart giữ 429, budget ≈ 0, gửi <code>SIGTERM</code> khi đang có request) và Docker build/stop.</p>
+          <div class="audit-grid">
+            <div class="audit-item"><span class="tick">✓</span>Dockerfile multi-stage</div>
+            <div class="audit-item"><span class="tick">✓</span>Compose agent + Redis</div>
+            <div class="audit-item"><span class="tick">✓</span>.dockerignore sạch</div>
+            <div class="audit-item"><span class="tick">✓</span>GET /health → 200</div>
+            <div class="audit-item"><span class="tick">✓</span>GET /ready → 200 / 503</div>
+            <div class="audit-item"><span class="tick">✓</span>X-API-Key Auth (401)</div>
+            <div class="audit-item"><span class="tick">✓</span>Rate Limit Redis (429)</div>
+            <div class="audit-item"><span class="tick">✓</span>Cost Guard Redis (402)</div>
+            <div class="audit-item"><span class="tick">✓</span>Config 100% từ Env</div>
+            <div class="audit-item"><span class="tick">✓</span>Structured JSON Logs</div>
+            <div class="audit-item"><span class="tick">✓</span>Graceful SIGTERM</div>
+            <div class="audit-item"><span class="tick">✓</span>railway.toml &amp; render.yaml</div>
           </div>
         </article>
 
-        <!-- CP3 -->
-        <article class="chapter">
-          <div class="chapter-head">
-            <div>
-              <span class="cp-tag">CP3 · PART 4 · API SECURITY</span>
-              <h3>Ba lớp bảo vệ: Xác thực, Giới hạn tốc độ &amp; Khóa ngân sách</h3>
-            </div>
-            <span class="status-chip">401 · 200 · 429 · 402</span>
+        <!-- CP6 Cloud Deployment + 3 Real Screenshots -->
+        <article class="story-card reveal-card">
+          <div class="story-top">
+            <span class="cp-pill">CP6 · Part 3 · Cloud Deployment</span>
+            <span class="result-pill">Live trên Railway + Redis</span>
           </div>
-          <div class="chapter-body">
-            <p>Khi API mở ra Internet, phải chặn đồng thời truy cập trái phép, spam request và nguy cơ "cháy ví" LLM. Thử nghiệm thực tế với <code>X-API-Key</code>, JWT <code>POST /auth/token</code> (<code>student</code> / <code>10 req/phút</code>) và Cost Guard dùng Redis <code>INCRBYFLOAT</code>.</p>
-          </div>
-          <div class="http-row">
-            <div class="http-card">
-              <div class="http-code c401">401</div>
-              <p>Thiếu hoặc sai <code>X-API-Key</code> bị từ chối ngay tại cửa.</p>
-            </div>
-            <div class="http-card">
-              <div class="http-code c200">200</div>
-              <p>Key / JWT hợp lệ được phục vụ (Request #1 → #10).</p>
-            </div>
-            <div class="http-card">
-              <div class="http-code c429">429</div>
-              <p>Request #11 vượt 10 req/phút, trả kèm <code>Retry-After: 59</code>.</p>
-            </div>
-            <div class="http-card">
-              <div class="http-code c402">402</div>
-              <p>Tổng chi phí chạm trần ngân sách ngày/tháng → dừng gọi LLM.</p>
-            </div>
-          </div>
-        </article>
-
-        <!-- CP4 -->
-        <article class="chapter">
-          <div class="chapter-head">
-            <div>
-              <span class="cp-tag">CP4 · PART 5 · SCALING &amp; RELIABILITY</span>
-              <h3>Thiết kế Stateless trên 3 instance với Nginx &amp; Redis</h3>
-            </div>
-            <span class="status-chip">3 instances · 10/10 msgs</span>
-          </div>
-          <div class="chapter-body">
-            <p>Chạy <code>docker compose -p k5-day14-scaling up -d --build --scale agent=3</code> và kiểm thử bằng <code>test_stateless.py</code>. Cả 5 câu hỏi trong cùng một phiên <code>bd317508-...</code> được Nginx chia đều qua 3 container độc lập (<code>instance-604b6b</code>, <code>instance-97da3f</code>, <code>instance-61e702</code>), nhưng toàn bộ 10 tin nhắn lịch sử vẫn nguyên vẹn vì lưu chung trong Redis.</p>
-          </div>
-        </article>
-
-        <!-- CP5 -->
-        <article class="chapter">
-          <div class="chapter-head">
-            <div>
-              <span class="cp-tag">CP5 · PART 6 · FINAL PROJECT (60/120 ĐIỂM)</span>
-              <h3>Production Agent hoàn chỉnh — PASS 12/12 tiêu chí</h3>
-            </div>
-            <span class="status-chip">43/43 checks · 160 MB</span>
-          </div>
-          <div class="chapter-body">
-            <p>Hoàn thiện toàn bộ các module trong <code>06-lab-complete/</code> và vượt qua kịch bản chấm tự động <code>check_production_ready.py</code> ở môi trường POSIX + Docker (<code>docker stop</code> thoát êm với exit code <code>0</code> trong <code>1.0s</code>).</p>
-          </div>
-          <div class="check-grid">
-            <div class="check-pill"><span class="check-mark">✓</span>Dockerfile multi-stage (160 MB)</div>
-            <div class="check-pill"><span class="check-mark">✓</span>docker-compose (agent + redis)</div>
-            <div class="check-pill"><span class="check-mark">✓</span>.dockerignore chặn .env</div>
-            <div class="check-pill"><span class="check-mark">✓</span>GET /health → 200</div>
-            <div class="check-pill"><span class="check-mark">✓</span>GET /ready (503 khi mất Redis)</div>
-            <div class="check-pill"><span class="check-mark">✓</span>X-API-Key Auth (401/200)</div>
-            <div class="check-pill"><span class="check-mark">✓</span>Rate Limit Redis (429 bền vững)</div>
-            <div class="check-pill"><span class="check-mark">✓</span>Cost Guard Redis (402)</div>
-            <div class="check-pill"><span class="check-mark">✓</span>Config 100% từ Env Vars</div>
-            <div class="check-pill"><span class="check-mark">✓</span>Structured JSON Logging</div>
-            <div class="check-pill"><span class="check-mark">✓</span>Graceful Shutdown SIGTERM</div>
-            <div class="check-pill"><span class="check-mark">✓</span>railway.toml &amp; render.yaml</div>
-          </div>
-        </article>
-
-        <!-- CP6 -->
-        <article class="chapter">
-          <div class="chapter-head">
-            <div>
-              <span class="cp-tag">CP6 · PART 3 · CLOUD DEPLOYMENT</span>
-              <h3>Đưa Agent + Managed Redis lên Railway</h3>
-            </div>
-            <span class="status-chip">thungphasanh.up.railway.app</span>
-          </div>
-          <div class="chapter-body">
-            <p>Triển khai trực tiếp thư mục <code>06-lab-complete</code> trên Railway kèm dịch vụ Redis quản lý nội bộ, tiêm secrets qua Railway Variables (không commit lên Git) và xác minh đủ 4 lệnh CP6 (<code>200 / 200 / 401 / 200</code>).</p>
-          </div>
-          <div class="shot-grid">
-            <button type="button" class="shot-card" data-src="/assets/dashboard.png" data-caption="CP6 — Railway Dashboard & Service Variables (đã ẩn AGENT_API_KEY và REDIS_URL)">
-              <img class="shot-thumb" src="/assets/dashboard.png" alt="Railway dashboard và biến môi trường" loading="lazy" />
-              <div class="shot-cap">
-                <strong>dashboard.png</strong>
-                <span>Project Railway + Redis Online &amp; biến môi trường</span>
-              </div>
+          <h3>Deploy lên Railway với HTTPS công khai &amp; Managed Redis</h3>
+          <p class="story-lead">Triển khai thư mục <code>06-lab-complete</code> lên <code>thungphasanh.up.railway.app</code>, kết nối <code>REDIS_URL</code> nội bộ, ẩn toàn bộ secrets trên Railway Variables và kiểm chứng thực tế đủ 4 mã <code>200 / 200 / 401 / 200</code>. Bấm vào từng ảnh để xem phóng to.</p>
+          <div class="gallery-grid">
+            <button type="button" class="shot-tile" data-src="/assets/dashboard.png" data-caption="CP6 — Railway Project & Variables (AGENT_API_KEY và REDIS_URL đã ẩn an toàn)">
+              <div class="shot-frame"><img src="/assets/dashboard.png" alt="Railway dashboard và biến môi trường" loading="lazy" /></div>
+              <div class="shot-meta"><strong>dashboard.png</strong><span>Project Online + 6 Service Variables</span></div>
             </button>
-            <button type="button" class="shot-card" data-src="/assets/running.png" data-caption="CP6 — Railway Deploy Logs: Uvicorn khởi chạy trên 0.0.0.0:8080 với structured JSON log">
-              <img class="shot-thumb" src="/assets/running.png" alt="Railway deploy logs đang chạy" loading="lazy" />
-              <div class="shot-cap">
-                <strong>running.png</strong>
-                <span>Service Online + Deploy Logs JSON</span>
-              </div>
+            <button type="button" class="shot-tile" data-src="/assets/running.png" data-caption="CP6 — Railway Deploy Logs: Uvicorn chạy 0.0.0.0:8080 với structured JSON logs">
+              <div class="shot-frame"><img src="/assets/running.png" alt="Railway deploy logs" loading="lazy" /></div>
+              <div class="shot-meta"><strong>running.png</strong><span>Deploy Logs JSON &amp; trạng thái Active</span></div>
             </button>
-            <button type="button" class="shot-card" data-src="/assets/test.png" data-caption="CP6 — 4 lệnh kiểm tra trực tiếp lên Public URL trả về đúng 200 / 200 / 401 / 200">
-              <img class="shot-thumb" src="/assets/test.png" alt="Kết quả 4 lệnh curl CP6" loading="lazy" />
-              <div class="shot-cap">
-                <strong>test.png</strong>
-                <span>Xác minh thực tế: 200 · 200 · 401 · 200</span>
-              </div>
+            <button type="button" class="shot-tile" data-src="/assets/test.png" data-caption="CP6 — 4 lệnh kiểm tra trực tiếp trên Public URL trả về 200 / 200 / 401 / 200">
+              <div class="shot-frame"><img src="/assets/test.png" alt="Kết quả 4 lệnh kiểm tra CP6" loading="lazy" /></div>
+              <div class="shot-meta"><strong>test.png</strong><span>Kiểm chứng: 200 · 200 · 401 · 200</span></div>
             </button>
           </div>
         </article>
 
-        <!-- CP7 -->
-        <article class="chapter">
-          <div class="chapter-head">
-            <div>
-              <span class="cp-tag">CP7 · PART 7 BƯỚC 1 · BENCHMARK &amp; EVAL</span>
-              <h3>Đo Tail Latency (p95/p99) &amp; Quality Gate 23/23 câu</h3>
-            </div>
-            <span class="status-chip">v1 4.3% → v2 100.0%</span>
+        <!-- CP7 Local Benchmark + Eval Quality Gate -->
+        <article class="story-card reveal-card">
+          <div class="story-top">
+            <span class="cp-pill">CP7 · Part 7 Bước 1 · Benchmark &amp; Eval</span>
+            <span class="result-pill">Eval 23/23 (100%) · CI Quality Gate</span>
           </div>
-          <div class="chapter-body">
-            <p>Chạy <code>load_test.py</code> ở 4 mức concurrency (<code>1, 10, 50, 100</code>) và 3 mức <code>MOCK_SLOW_RATE</code> để chứng minh vì sao latency trung bình che giấu nhóm người dùng bị chậm. Sau đó chạy <code>eval/run_eval.py</code> trên 23 câu hỏi golden dataset và bổ sung 2 mục <code>JWT</code>, <code>Kubernetes HPA</code> vào Knowledge Base.</p>
-          </div>
+          <h3>Vạch trần Tail Latency &amp; Nâng độ chính xác từ 4.3% lên 100%</h3>
+          <p class="story-lead">Load test 4 mức concurrency (<code>c=1 → 100</code>, bão hòa tại <code>c=100</code> với <code>p95 = 4069.7 ms</code>) và so sánh 3 mức <code>MOCK_SLOW_RATE</code> (vạch đỏ đánh dấu ngưỡng SLO <code>500 ms</code>).</p>
 
-          <!-- Interactive Tail Latency Visualizer -->
-          <div class="tail-box">
-            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
-              <strong style="font-size:14px;">So sánh Tail Latency thực tế (300 requests, concurrency = 20)</strong>
-              <div class="seg-tabs" role="tablist" aria-label="Chọn tỉ lệ request chậm">
-                <button type="button" class="seg-btn active" data-slow="0">SLOW_RATE = 0</button>
+          <div class="tail-stage">
+            <div class="tail-top">
+              <strong style="font-size:14.5px;color:var(--ink);">So sánh avg vs p95 vs p99 (300 requests, concurrency = 20)</strong>
+              <div class="seg-group" role="tablist">
+                <button type="button" class="seg-btn active" data-slow="0">SLOW = 0</button>
                 <button type="button" class="seg-btn" data-slow="0.03">0.03 (mặc định)</button>
                 <button type="button" class="seg-btn" data-slow="0.1">0.1 (10% chậm)</button>
               </div>
             </div>
-            <div class="bar-group" style="margin-top:8px;">
+            <div class="bars">
               <div>
-                <div class="bar-item-head"><span>Average latency</span><strong id="tail-avg-val">189.6 ms</strong></div>
-                <div class="bar-track"><div class="bar-fill" id="tail-avg-bar" style="width:11%;"></div></div>
+                <div class="bar-meta"><span>Average latency</span><strong id="t-avg">189.6 ms</strong></div>
+                <div class="bar-rail"><div class="slo-marker" title="SLO 500ms"></div><div class="bar-fill" id="b-avg" style="width:10.5%;"></div></div>
               </div>
               <div>
-                <div class="bar-item-head"><span>p95 latency (SLO ≤ 500 ms)</span><strong id="tail-p95-val">229.8 ms · PASS</strong></div>
-                <div class="bar-track"><div class="bar-fill ok" id="tail-p95-bar" style="width:13.3%;"></div></div>
+                <div class="bar-meta"><span>p95 latency (vạch đỏ = SLO 500 ms)</span><strong id="t-p95">229.8 ms · PASS</strong></div>
+                <div class="bar-rail"><div class="slo-marker" title="SLO 500ms"></div><div class="bar-fill emerald" id="b-p95" style="width:12.8%;"></div></div>
               </div>
               <div>
-                <div class="bar-item-head"><span>p99 latency (nhóm 1% chậm nhất)</span><strong id="tail-p99-val">236.4 ms</strong></div>
-                <div class="bar-track"><div class="bar-fill amber" id="tail-p99-bar" style="width:13.7%;"></div></div>
+                <div class="bar-meta"><span>p99 latency (nhóm 1% chậm nhất)</span><strong id="t-p99">236.4 ms</strong></div>
+                <div class="bar-rail"><div class="slo-marker" title="SLO 500ms"></div><div class="bar-fill amber" id="b-p99" style="width:13.1%;"></div></div>
               </div>
             </div>
-            <p id="tail-note" style="margin-top:12px;font-size:13px;color:var(--muted);">
-              Khi không có request chậm bất thường, avg (189.6 ms), p95 (229.8 ms) và p99 (236.4 ms) sát nhau.
+            <p id="t-note" style="margin-top:14px;font-size:13.5px;color:var(--muted);">
+              Khi không có request chậm, avg (189.6 ms), p95 (229.8 ms) và p99 (236.4 ms) gần sát nhau.
             </p>
           </div>
 
-          <!-- Eval Comparison Bars -->
-          <div class="bar-group">
+          <div class="bars">
             <div>
-              <div class="bar-item-head"><span>Agent v1 (không retrieval · $0.00039975 / câu đúng)</span><strong>4.3% (1/23)</strong></div>
-              <div class="bar-track"><div class="bar-fill danger anim-bar" data-width="4.3%"></div></div>
+              <div class="bar-meta"><span>Agent v1 (không retrieval · $0.00039975 / câu đúng)</span><strong>4.3% (1/23)</strong></div>
+              <div class="bar-rail"><div class="bar-fill rose anim-bar" data-w="4.3%"></div></div>
             </div>
             <div>
-              <div class="bar-item-head"><span>Agent v2 (có RAG · $0.00003607 / câu đúng)</span><strong>91.3% (21/23)</strong></div>
-              <div class="bar-track"><div class="bar-fill anim-bar" data-width="91.3%"></div></div>
+              <div class="bar-meta"><span>Agent v2 (có RAG · $0.00003607 / câu đúng)</span><strong>91.3% (21/23)</strong></div>
+              <div class="bar-rail"><div class="bar-fill anim-bar" data-w="91.3%"></div></div>
             </div>
             <div>
-              <div class="bar-item-head"><span>Agent v2 + bổ sung KB (JWT &amp; HPA · rẻ hơn ~11.6× / câu đúng)</span><strong>100.0% (23/23 · 0 regression)</strong></div>
-              <div class="bar-track"><div class="bar-fill ok anim-bar" data-width="100%"></div></div>
+              <div class="bar-meta"><span>Agent v2 + bổ sung KB JWT &amp; HPA (rẻ hơn ~11.6× / câu đúng · 0 regression)</span><strong>100.0% (23/23)</strong></div>
+              <div class="bar-rail"><div class="bar-fill emerald anim-bar" data-w="100%"></div></div>
             </div>
           </div>
         </article>
 
-        <!-- CP8 -->
-        <article class="chapter">
-          <div class="chapter-head">
-            <div>
-              <span class="cp-tag">CP8 · PART 7 BƯỚC 2 · OBSERVABILITY &amp; CHAOS</span>
-              <h3>Prometheus, Grafana, Jaeger, Locust &amp; 5 thí nghiệm phá hệ thống</h3>
+        <!-- CP8 Observability Stack + Waterfall + Chaos + 4 Real Screenshots -->
+        <article class="story-card reveal-card">
+          <div class="story-top">
+            <span class="cp-pill">CP8 · Part 7 Bước 2 · Observability &amp; Chaos</span>
+            <span class="result-pill">Scale 3 giảm p95 340 → 260 ms</span>
+          </div>
+          <h3>Prometheus, Grafana, Jaeger, Locust &amp; 5 thí nghiệm Chaos</h3>
+          <p class="story-lead">Chạy <code>promtool test rules → SUCCESS</code>, chặn <code>/metrics</code> tại Nginx (<code>404</code>), benchmark Locust 100 users (2 phút) và kích hoạt thực tế toàn bộ cảnh báo SLO &amp; chi phí.</p>
+
+          <!-- Visual Waterfall of Real Slow Trace -->
+          <div class="waterfall">
+            <div class="wf-head">
+              <span>JAEGER TRACE WATERFALL · trace_id: a64065927be4936321082574e15184d1</span>
+              <span>TOTAL: 1.7s (~1712.7 ms)</span>
             </div>
-            <span class="status-chip">4/4 alerts verified</span>
-          </div>
-          <div class="chapter-body">
-            <p>Dựng stack đầy đủ bằng Docker Compose: unit test alert rules (<code>promtool → SUCCESS</code>), benchmark Locust 100 users trong 2 phút cho thấy <code>scale=3</code> giảm <code>p95 /ask</code> từ <strong>340 ms → 260 ms</strong> so với <code>scale=1</code>, chặn <code>/metrics</code> tại Nginx (<code>404</code>), truy vết request chậm tới tận dòng JSON log và kích hoạt toàn bộ cảnh báo Chaos A–E.</p>
-          </div>
-
-          <div class="data-table-wrap">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Thí nghiệm</th>
-                  <th>Cấu hình phá hệ thống</th>
-                  <th>Alert kích hoạt</th>
-                  <th>Thời gian → Firing</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="mono">Exp A</td>
-                  <td class="mono">MOCK_ERROR_RATE=0.2</td>
-                  <td><span class="badge-fail">AgentHighErrorRate</span> (20.05%)</td>
-                  <td class="mono">90.6 s</td>
-                </tr>
-                <tr>
-                  <td class="mono">Exp B</td>
-                  <td class="mono">MOCK_SLOW_RATE=0.3</td>
-                  <td><span class="badge-fail">AgentHighLatencyP95</span> (1.895 s)</td>
-                  <td class="mono">150.8 s</td>
-                </tr>
-                <tr>
-                  <td class="mono">Exp C</td>
-                  <td class="mono">LLM_MODEL=mock-llm-large</td>
-                  <td><span class="badge-fail">LLMCostBurnRateHigh</span> ($16.59/h)</td>
-                  <td class="mono">150.4 s</td>
-                </tr>
-                <tr>
-                  <td class="mono">Exp D</td>
-                  <td class="mono">docker pause 1 agent</td>
-                  <td><span class="badge-fail">AgentInstanceDown</span> (up == 0)</td>
-                  <td class="mono">40.1 s</td>
-                </tr>
-                <tr>
-                  <td class="mono">Exp E</td>
-                  <td class="mono">AGENT_VERSION=v1</td>
-                  <td><span class="badge-pass">Không alert hạ tầng</span> → chỉ Eval bắt được</td>
-                  <td class="mono">N/A</td>
-                </tr>
-              </tbody>
-            </table>
+            <div class="wf-row">
+              <span>POST /ask</span>
+              <div class="wf-track"><div class="wf-bar" style="left:0%;width:100%;background:#3B82F6;"></div></div>
+              <span>1712.7 ms</span>
+            </div>
+            <div class="wf-row">
+              <span>agent.retrieve_context</span>
+              <div class="wf-track"><div class="wf-bar" style="left:0.1%;width:1.6%;background:#10B981;"></div></div>
+              <span>16.7 ms</span>
+            </div>
+            <div class="wf-row">
+              <span>chat mock-llm-small</span>
+              <div class="wf-track"><div class="wf-bar" style="left:1.0%;width:98.9%;background:linear-gradient(90deg,#F59E0B,#EF4444);"></div></div>
+              <span>1694.8 ms</span>
+            </div>
+            <div class="wf-log">{"ts":"2026-11-26T08:00:40.802142+00:00","event":"llm_call","trace_id":"a64065927be4936321082574e15184d1","model":"mock-llm-small","input_tokens":95,"output_tokens":55,"cost_usd":4.7e-05,"llm_ms":1694.8}</div>
           </div>
 
-          <div class="trace-box">
-            <div class="trace-title">Log ↔ Trace correlation · trace_id = a64065927be4936321082574e15184d1 (chat mock-llm-small = 1694.8 ms / 1.7 s ≈ 99%)</div>
-            {"ts": "2026-11-26T08:00:40.802142+00:00", "level": "INFO", "service": "observable-agent", "instance": "cf19f6b9da0b", "event": "llm_call", "trace_id": "a64065927be4936321082574e15184d1", "span_id": "1654a7896e455d6c", "request_id": "95e0b08863a9", "model": "mock-llm-small", "agent_version": "v2", "input_tokens": 95, "output_tokens": 55, "cost_usd": 4.7e-05, "llm_ms": 1694.8}
+          <!-- Borderless Chaos Rows -->
+          <div class="chaos-list">
+            <div class="chaos-row">
+              <span class="chaos-tag">Exp A</span>
+              <span><code>MOCK_ERROR_RATE=0.2</code> (20.05% lỗi)</span>
+              <span><span class="pill-fire">AgentHighErrorRate</span></span>
+              <span class="chaos-time">+90.6 s</span>
+            </div>
+            <div class="chaos-row">
+              <span class="chaos-tag">Exp B</span>
+              <span><code>MOCK_SLOW_RATE=0.3</code> (p95 = 1.895 s)</span>
+              <span><span class="pill-fire">AgentHighLatencyP95</span></span>
+              <span class="chaos-time">+150.8 s</span>
+            </div>
+            <div class="chaos-row">
+              <span class="chaos-tag">Exp C</span>
+              <span><code>LLM_MODEL=mock-llm-large</code> ($16.59/giờ)</span>
+              <span><span class="pill-fire">LLMCostBurnRateHigh</span></span>
+              <span class="chaos-time">+150.4 s</span>
+            </div>
+            <div class="chaos-row">
+              <span class="chaos-tag">Exp D</span>
+              <span><code>docker pause</code> 1 container (up == 0)</span>
+              <span><span class="pill-fire">AgentInstanceDown</span></span>
+              <span class="chaos-time">+40.1 s</span>
+            </div>
+            <div class="chaos-row">
+              <span class="chaos-tag">Exp E</span>
+              <span><code>AGENT_VERSION=v1</code> (tokens tụt 1463 → 560/s)</span>
+              <span><span class="pill-silent">0 alert hạ tầng → cần Eval</span></span>
+              <span class="chaos-time">N/A</span>
+            </div>
           </div>
 
-          <div class="shot-grid">
-            <button type="button" class="shot-card" data-src="/assets/grafana-dashboard.png" data-caption="CP8 — Grafana Day 14 Overview: 18.7 req/s, 0.68% error, p95 295.79 ms, 2 instances active">
-              <img class="shot-thumb" src="/assets/grafana-dashboard.png" alt="Grafana dashboard đang có tải" loading="lazy" />
-              <div class="shot-cap">
-                <strong>grafana-dashboard.png</strong>
-                <span>4 Golden Signals &amp; LLM metrics live</span>
-              </div>
+          <div class="gallery-grid">
+            <button type="button" class="shot-tile" data-src="/assets/grafana-dashboard.png" data-caption="CP8 — Grafana Dashboard live: 18.7 req/s, 0.68% error, p95 295.79 ms, 2 instances active">
+              <div class="shot-frame"><img src="/assets/grafana-dashboard.png" alt="Grafana dashboard live" loading="lazy" /></div>
+              <div class="shot-meta"><strong>grafana-dashboard.png</strong><span>4 Golden Signals &amp; LLM panels</span></div>
             </button>
-            <button type="button" class="shot-card" data-src="/assets/jaeger-slow-trace.png" data-caption="CP8 — Jaeger Slow Trace (a640659...): retrieval 16.7 ms, chat mock-llm-small 1.7 s (~99%)">
-              <img class="shot-thumb" src="/assets/jaeger-slow-trace.png" alt="Jaeger slow trace" loading="lazy" />
-              <div class="shot-cap">
-                <strong>jaeger-slow-trace.png</strong>
-                <span>Trace chậm 1.7 s chỉ rõ nút thắt tại LLM</span>
-              </div>
+            <button type="button" class="shot-tile" data-src="/assets/jaeger-slow-trace.png" data-caption="CP8 — Jaeger Slow Trace (a640659...): retrieval 16.7 ms vs LLM 1.7 s (~99%)">
+              <div class="shot-frame"><img src="/assets/jaeger-slow-trace.png" alt="Jaeger slow trace" loading="lazy" /></div>
+              <div class="shot-meta"><strong>jaeger-slow-trace.png</strong><span>Trace chậm 1.7 s · nút thắt tại LLM</span></div>
             </button>
-            <button type="button" class="shot-card" data-src="/assets/jaeger-error-trace.png" data-caption="CP8 — Jaeger Error Trace (0d9c148...): HTTP 503 kèm exception event Upstream LLM error">
-              <img class="shot-thumb" src="/assets/jaeger-error-trace.png" alt="Jaeger error trace với exception event" loading="lazy" />
-              <div class="shot-cap">
-                <strong>jaeger-error-trace.png</strong>
-                <span>Trace lỗi 503 kèm sự kiện exception</span>
-              </div>
+            <button type="button" class="shot-tile" data-src="/assets/jaeger-error-trace.png" data-caption="CP8 — Jaeger Error Trace (0d9c148...): HTTP 503 kèm exception event Upstream LLM error">
+              <div class="shot-frame"><img src="/assets/jaeger-error-trace.png" alt="Jaeger error trace" loading="lazy" /></div>
+              <div class="shot-meta"><strong>jaeger-error-trace.png</strong><span>Trace lỗi 503 + exception event</span></div>
             </button>
-            <button type="button" class="shot-card" data-src="/assets/prometheus-alert-firing.png" data-caption="CP8 — Prometheus Alerts: AgentHighErrorRate (20.05%) và AgentHighLatencyP95 (1.895s) cùng FIRING">
-              <img class="shot-thumb" src="/assets/prometheus-alert-firing.png" alt="Prometheus 2 alerts cùng firing" loading="lazy" />
-              <div class="shot-cap">
-                <strong>prometheus-alert-firing.png</strong>
-                <span>2 cảnh báo cùng lúc trạng thái FIRING</span>
-              </div>
+            <button type="button" class="shot-tile" data-src="/assets/prometheus-alert-firing.png" data-caption="CP8 — Prometheus Alerts: AgentHighErrorRate và AgentHighLatencyP95 cùng FIRING">
+              <div class="shot-frame"><img src="/assets/prometheus-alert-firing.png" alt="Prometheus alerts firing" loading="lazy" /></div>
+              <div class="shot-meta"><strong>prometheus-alert-firing.png</strong><span>2 cảnh báo cùng trạng thái FIRING</span></div>
             </button>
           </div>
         </article>
@@ -1562,203 +1788,142 @@
   </section>
 
   <!-- Section 3: Live API Test Bench -->
-  <section class="block" id="console">
+  <section class="band" id="console">
     <div class="container">
-      <div class="section-head">
+      <div class="band-head">
         <div>
-          <div class="section-tag">03 · Bảng kiểm thử trực tiếp</div>
-          <h2 class="section-title">Gọi API thật của server đang chạy</h2>
+          <div class="band-label">03 · Kiểm thử trực tiếp</div>
+          <h2 class="band-title">Thử gọi API thật ngay trên trang này</h2>
         </div>
-        <p class="section-desc">
-          Mọi nút dưới đây gửi HTTP request thực tới chính service FastAPI + Redis này. Không có API key nào được lưu trong mã nguồn trang web.
-        </p>
+        <p class="band-sub">Gửi request trực tiếp đến chính service FastAPI + Redis đang phục vụ trang web. Không lưu sẵn bất kỳ API key nào trong mã nguồn.</p>
       </div>
 
       <div class="console-grid">
-        <div class="console-panel">
-          <div class="field-group">
-            <label for="api-key-input">X-API-Key (tự nhập key của bạn để gọi POST /ask)</label>
-            <input id="api-key-input" class="mono" type="password" placeholder="Nhập AGENT_API_KEY của bạn (bỏ trống để test lỗi 401)" autocomplete="off" />
+        <div class="console-card glass">
+          <div class="field">
+            <label for="api-key-input">X-API-Key (tự nhập để nhận 200, bỏ trống để test 401)</label>
+            <input id="api-key-input" class="mono" type="password" placeholder="Nhập AGENT_API_KEY của bạn..." autocomplete="off" />
           </div>
-          <div class="field-group">
+          <div class="field">
             <label for="question-input">Câu hỏi gửi tới POST /ask</label>
             <textarea id="question-input" rows="3">What is Docker deployment?</textarea>
           </div>
-          <button type="button" class="btn-primary" id="btn-send-ask" style="width:100%;justify-content:center;">
-            Gửi POST /ask
-          </button>
-          <div class="quick-btns">
-            <button type="button" class="btn-mini" id="btn-test-health">GET /health</button>
-            <button type="button" class="btn-mini" id="btn-test-ready">GET /ready</button>
-            <button type="button" class="btn-mini" id="btn-test-401">POST /ask (không key → 401)</button>
+          <button type="button" class="btn-primary" id="btn-ask" style="width:100%;justify-content:center;">Gửi POST /ask</button>
+          <div class="quick-row">
+            <button type="button" class="chip-btn" id="btn-h">GET /health</button>
+            <button type="button" class="chip-btn" id="btn-r">GET /ready</button>
+            <button type="button" class="chip-btn" id="btn-401">Test không key → 401</button>
           </div>
         </div>
 
-        <div class="console-output" aria-live="polite">
-          <div class="console-meta">
-            <span id="out-endpoint">Sẵn sàng kiểm thử</span>
-            <span id="out-status">HTTP —</span>
+        <div class="console-screen" aria-live="polite">
+          <div class="screen-bar">
+            <span id="out-ep">Sẵn sàng nhận lệnh</span>
+            <span id="out-st">HTTP —</span>
           </div>
-          <pre class="console-pre" id="out-body">// Bấm một nút bên trái để xem phản hồi JSON thực tế từ server,
-// mã HTTP (200 / 401 / 429 / 402), và thời gian phản hồi (ms).</pre>
+          <pre class="screen-pre" id="out-pre">// Bấm một nút bên trái để gọi thẳng tới server live
+// và xem JSON trả về, mã HTTP (200 / 401 / 429 / 402) cùng thời gian phản hồi.</pre>
         </div>
       </div>
     </div>
   </section>
 
   <footer>
-    <div class="container footer-inner">
-      <div><strong>Do Hoang Vu</strong> · MSSV <code>2A202603920</code> · Lớp <code>K5-L3B</code> · AICB-P1 Day 14</div>
-      <div style="display:flex;gap:16px;">
-        <a href="/docs">Swagger /docs</a>
-        <a href="/health">/health</a>
-        <a href="/ready">/ready</a>
-        <a href="https://github.com/hoangvu1806/K5-L3B-DAY14-DoHoangVu-2A202603920-Deployment-Benchmark-Observability" target="_blank" rel="noopener">GitHub Repo ↗</a>
+    <div class="container">
+      <div class="footer-glass glass">
+        <div><strong>Do Hoang Vu</strong> · MSSV <code>2A202603920</code> · Lớp <code>K5-L3B</code> · AICB-P1 Day 14</div>
+        <div style="display:flex;gap:18px;font-weight:500;">
+          <a href="/docs">Swagger /docs</a>
+          <a href="/health">/health</a>
+          <a href="/ready">/ready</a>
+          <a href="https://github.com/hoangvu1806/K5-L3B-DAY14-DoHoangVu-2A202603920-Deployment-Benchmark-Observability" target="_blank" rel="noopener">GitHub Repo ↗</a>
+        </div>
       </div>
     </div>
   </footer>
 
-  <!-- Lightbox Modal -->
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-caption">
-    <div class="lightbox-inner">
-      <div class="lightbox-bar">
-        <span id="lightbox-caption"></span>
-        <button type="button" class="lightbox-close" id="lightbox-close">Đóng (Esc)</button>
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lb-cap">
+    <div class="lightbox-panel">
+      <div class="lightbox-head">
+        <span id="lb-cap"></span>
+        <button type="button" class="lightbox-close" id="lb-close">Đóng (Esc)</button>
       </div>
-      <img class="lightbox-img" id="lightbox-img" alt="" />
+      <img class="lightbox-img" id="lb-img" alt="" />
     </div>
   </div>
 
   <script>
-    // ── 1. Stack Explorer Data ────────────────────────────
-    const STACK_ITEMS = [
-      {
-        id: "fastapi",
-        layer: "Application",
-        name: "FastAPI + Uvicorn",
-        brief: "Khung tạo API async và ASGI server chạy 2 worker.",
-        what: "Xây dựng các endpoint /health, /ready, /ask với xác thực đầu vào bằng Pydantic, ghi log JSON cho mọi request và hỗ trợ tắt êm khi nhận SIGTERM.",
-        why: "Trong production cần tách rõ HTTP validation (422), lỗi bảo mật (401/429/402) và xử lý nhiều request đồng thời mà không chặn event loop.",
-        metric: "Thực tế lab: chạy --workers 2, thoát SIGTERM với exit code 0 trong 1.0s."
-      },
-      {
-        id: "docker",
-        layer: "Packaging",
-        name: "Docker Multi-stage",
-        brief: "Đóng gói môi trường đồng nhất, gọn nhẹ & non-root.",
-        what: "Stage builder cài compiler/packages; stage runtime chỉ copy kết quả sang python:3.11-slim, chạy dưới quyền user appuser và gắn HEALTHCHECK.",
-        why: "Xóa bỏ vấn đề 'chạy trên máy em thì được', thu nhỏ image để deploy nhanh và giảm bề mặt tấn công bảo mật.",
-        metric: "Part 2: 1.15 GB → 163 MB (−85.9%) · Part 6 final image: 160 MB (< 500 MB)."
-      },
-      {
-        id: "redis",
-        layer: "Shared State",
-        name: "Redis",
-        brief: "Bộ nhớ chung siêu nhanh cho mọi instance.",
-        what: "Lưu cửa sổ trượt Rate Limit (Sorted Set ZADD/ZCARD), cộng dồn chi phí LLM (INCRBYFLOAT) và lịch sử hội thoại.",
-        why: "Giúp ứng dụng hoàn toàn Stateless: dù scale lên 3 instance hay restart server, bộ đếm 429 và phiên chat không bị mất.",
-        metric: "CP5 kiểm tra restart agent vẫn trả 429 · CP6 kết nối Redis nội bộ Railway (/ready → 200)."
-      },
-      {
-        id: "nginx",
-        layer: "Edge / LB",
-        name: "Nginx",
-        brief: "Cổng điều phối tải & tường chắn bảo mật.",
-        what: "Phân phối request đều (round-robin) tới nhiều container agent, bổ sung security headers và chặn truy cập /metrics từ bên ngoài.",
-        why: "Client chỉ cần gọi 1 địa chỉ duy nhất, không lộ hạ tầng nội bộ và tự động bỏ qua instance lỗi.",
-        metric: "CP8: chia đều ~9.49 vs 9.58 req/s cho 2 instance; GET :8080/metrics → 404."
-      },
-      {
-        id: "railway",
-        layer: "Cloud PaaS",
-        name: "Railway",
-        brief: "Nền tảng cloud chạy container 24/7 + HTTPS.",
-        what: "Tự đọc 06-lab-complete/Dockerfile & railway.toml, cấp domain HTTPS công khai, tiêm biến PORT động và liên kết service Redis.",
-        why: "Đưa agent từ laptop ra Internet thật với auto-deploy từ GitHub và quản lý secrets tách biệt khỏi source code.",
-        metric: "Live tại thungphasanh.up.railway.app — xác minh đủ 200 / 200 / 401 / 200."
-      },
-      {
-        id: "locust",
-        layer: "Load Test",
-        name: "Locust",
-        brief: "Giả lập 100 người dùng đồng thời để đo sức tải.",
-        what: "Chạy headless 100 users / ramp 10 trong 2 phút, xuất file CSV thống kê RPS, p50, p95, p99 và tỉ lệ lỗi.",
-        why: "Đo xem scale ngang 1 → 3 instance cải thiện độ trễ ở đâu và đâu là nút thắt thực sự (API hay LLM).",
-        metric: "Scale 1 → 3 container giảm p95 /ask từ 340 ms xuống 260 ms (p99 giữ 1700 ms do LLM)."
-      },
-      {
-        id: "prometheus",
-        layer: "Metrics & Alerts",
-        name: "Prometheus",
-        brief: "Thu thập chỉ số định kỳ & đánh giá luật báo động.",
-        what: "Scrape /metrics của từng container qua Docker DNS, tính histogram_quantile(0.95) và kiểm tra 4 alert rules mỗi chu kỳ.",
-        why: "Phát hiện sớm khi error rate, latency p95, chi phí hoặc sức khỏe instance vượt ngưỡng SLO kéo dài.",
-        metric: "promtool test rules PASS · Kích hoạt thành công cả 4 alert trong Chaos A–D."
-      },
-      {
-        id: "grafana",
-        layer: "Visualization",
-        name: "Grafana",
-        brief: "Bảng đồng hồ trực quan theo 4 Golden Signals.",
-        what: "Hiển thị Traffic, Error rate, Latency p50/p95/p99/avg, Saturation (in-flight), Tokens/s và Cost burn rate ($/giờ).",
-        why: "Giúp kỹ sư nhìn một màn hình nắm ngay tình trạng toàn hệ thống thay vì đọc hàng nghìn dòng log.",
-        metric: "Ghi nhận live dưới tải 30 users: 18.7 req/s, 0.68% lỗi, p95 295.79 ms."
-      },
-      {
-        id: "jaeger",
-        layer: "Tracing",
-        name: "OpenTelemetry + Jaeger",
-        brief: "Quay chậm từng bước của một request để tìm nút thắt.",
-        what: "Ghi lại cây span (POST /ask → agent.run → retrieve_context → chat mock-llm) và gắn trace_id đồng nhất vào JSON log.",
-        why: "Biết chính xác chậm do code của mình hay do LLM bên ngoài, và thấy ngay stacktrace exception của lỗi 503.",
-        metric: "Trace chậm a640659...: retrieval chỉ 16.7 ms, LLM chiếm 1694.8 ms (~99%)."
-      }
+    // ── 1. Stack Flow Explorer ────────────────────────────
+    const STACK = [
+      { group: "serving", role: "Edge / LB", name: "Nginx", what: "Đứng ở cổng ngoài cùng để chia tải round-robin sang các container agent, gắn security headers và chặn truy cập /metrics từ bên ngoài.", why: "Ẩn cấu trúc mạng nội bộ và tự bỏ qua instance lỗi mà client không cần biết.", stat: "Chia đều 9.49 vs 9.58 req/s cho 2 instance · GET :8080/metrics → 404" },
+      { group: "serving", role: "API Core", name: "FastAPI + Uvicorn", what: "Cung cấp /health, /ready, /ask chuẩn Pydantic, ghi structured JSON log và xử lý tắt êm khi nhận SIGTERM.", why: "Phân tách rõ lỗi 422 / 401 / 429 / 402 và phục vụ bất đồng bộ hiệu quả.", stat: "Chạy 2 workers · Graceful shutdown exit code 0 trong 1.0s" },
+      { group: "serving", role: "Shared State", name: "Redis", what: "Lưu Rate Limit trượt 60s (Sorted Set), cộng dồn chi phí LLM (INCRBYFLOAT) và phiên hội thoại chung.", why: "Giúp agent hoàn toàn Stateless: restart hay mở 3 instance đều giữ nguyên trạng thái.", stat: "Restart agent vẫn trả 429 · Railway Managed Redis /ready → 200" },
+      { group: "cloud", role: "Container", name: "Docker Multi-stage", what: "Tách stage builder cài đặt và stage runtime python:3.11-slim sạch chạy user non-root kèm HEALTHCHECK.", why: "Chạy đồng nhất mọi nơi, gọn nhẹ để deploy nhanh và giảm bề mặt tấn công.", stat: "Part 2: 1.15 GB → 163 MB (−85.9%) · Part 6: 160 MB (≪ 500 MB)" },
+      { group: "cloud", role: "Cloud PaaS", name: "Railway", what: "Build trực tiếp 06-lab-complete/Dockerfile, cấp domain HTTPS công khai, tiêm PORT động và nối Redis.", why: "Vận hành 24/7 trên Internet thật, tự redeploy từ GitHub và cách ly secrets.", stat: "Live tại thungphasanh.up.railway.app (200 · 200 · 401 · 200)" },
+
+      { group: "bench", role: "Load Test", name: "Locust", what: "Giả lập 100 người dùng đồng thời trong 2 phút (headless), xuất CSV thống kê RPS, p50, p95, p99 và lỗi.", why: "Đo hiệu quả khi scale 1 → 3 container và tìm đúng nút thắt hệ thống.", stat: "Scale 1 → 3 container giúp giảm p95 /ask từ 340 ms xuống 260 ms" },
+      { group: "bench", role: "Quality Gate", name: "Eval + GitHub CI", what: "Chạy 23 câu hỏi golden dataset, so sánh baseline phát hiện regression và trả exit code 1 nếu không đạt.", why: "Đồng hồ hạ tầng không bắt được lỗi trả lời sai (như Thí nghiệm E); chỉ Eval mới chặn kịp.", stat: "v1 4.3% → v2 91.3% → v2+KB 100.0% (23/23, rẻ hơn 11.6× / câu đúng)" },
+
+      { group: "obs", role: "Metrics & Alerts", name: "Prometheus", what: "Scrape /metrics mỗi 5 giây qua Docker DNS, tính histogram_quantile(0.95) và đánh giá 4 alert rules.", why: "Cảnh báo kịp thời khi vi phạm SLO kéo dài thay vì chỉ báo động giả theo spike ngắn.", stat: "promtool test rules PASS · Xác minh firing cả 4 alert trong Chaos A–D" },
+      { group: "obs", role: "Dashboard", name: "Grafana", what: "Trực quan hóa 4 Golden Signals (Traffic, Errors, Latency, Saturation) cùng Tokens/s và Cost burn rate.", why: "Nắm toàn cảnh sức khỏe hệ thống chỉ trong vài giây thay vì tìm từng dòng log.", stat: "Đo live 30 users: 18.7 req/s · 0.68% lỗi · p95 295.79 ms" },
+      { group: "obs", role: "Tracing", name: "OTel + Jaeger", what: "Ghi lại cây span từng bước (retrieve_context → chat mock-llm) và gắn cùng trace_id vào JSON log.", why: "Xác định chính xác chậm do code của mình hay do upstream LLM bên ngoài.", stat: "Trace a640659...: retrieval 16.7 ms · LLM 1694.8 ms (~99%)" }
     ];
 
-    const stackNodesEl = document.getElementById("stack-nodes");
-    const inspectorEl = document.getElementById("stack-inspector");
-
+    const insp = document.getElementById("stack-inspector");
     function renderInspector(item) {
-      inspectorEl.innerHTML = `
-        <span class="inspector-badge">${item.layer}</span>
+      insp.innerHTML = `
+        <span class="inspector-kicker">${item.role}</span>
         <h3>${item.name}</h3>
-        <div class="inspector-section">
-          <h4>Nó làm gì trong hệ thống?</h4>
+        <div class="inspector-block">
+          <h4>Vai trò trong hệ thống</h4>
           <p>${item.what}</p>
         </div>
-        <div class="inspector-section">
-          <h4>Vì sao bắt buộc cần?</h4>
+        <div class="inspector-block">
+          <h4>Ý nghĩa kỹ thuật</h4>
           <p>${item.why}</p>
         </div>
-        <div class="inspector-metric">${item.metric}</div>
+        <div class="inspector-stat">${item.stat}</div>
       `;
     }
 
-    STACK_ITEMS.forEach((item, idx) => {
+    const groups = {
+      serving: document.getElementById("flow-serving"),
+      cloud: document.getElementById("flow-cloud"),
+      bench: document.getElementById("flow-bench"),
+      obs: document.getElementById("flow-obs")
+    };
+
+    const groupedCount = { serving: 0, cloud: 0, bench: 0, obs: 0 };
+    STACK.forEach((item, idx) => {
+      const container = groups[item.group];
+      if (groupedCount[item.group] > 0) {
+        const arr = document.createElement("span");
+        arr.className = "flow-arrow";
+        arr.textContent = "→";
+        arr.setAttribute("aria-hidden", "true");
+        container.appendChild(arr);
+      }
+      groupedCount[item.group]++;
+
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "stack-node" + (idx === 0 ? " active" : "");
-      btn.setAttribute("role", "tab");
-      btn.setAttribute("aria-selected", idx === 0 ? "true" : "false");
-      btn.innerHTML = `<span class="layer">${item.layer}</span><span class="name">${item.name}</span><span class="brief">${item.brief}</span>`;
+      btn.className = "stack-chip" + (idx === 1 ? " active" : "");
+      btn.innerHTML = `<span class="role">${item.role}</span><span class="title">${item.name}</span>`;
       btn.addEventListener("click", () => {
-        stackNodesEl.querySelectorAll(".stack-node").forEach((el) => {
-          el.classList.remove("active");
-          el.setAttribute("aria-selected", "false");
-        });
+        document.querySelectorAll(".stack-chip").forEach((c) => c.classList.remove("active"));
         btn.classList.add("active");
-        btn.setAttribute("aria-selected", "true");
         renderInspector(item);
         if (window.gsap && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-          gsap.fromTo(inspectorEl, { y: 8, opacity: 0.7 }, { y: 0, opacity: 1, duration: 0.28, ease: "power2.out" });
+          gsap.fromTo(insp, { y: 10, opacity: 0.65 }, { y: 0, opacity: 1, duration: 0.32, ease: "power2.out" });
         }
       });
-      stackNodesEl.appendChild(btn);
+      container.appendChild(btn);
     });
-    renderInspector(STACK_ITEMS[0]);
+    renderInspector(STACK[1]);
 
-    // ── 2. Live Production Telemetry (/health & /ready) ───
-    async function probeEndpoint(path) {
+    // ── 2. Live Telemetry Fetch ───────────────────────────
+    async function probe(path) {
       const t0 = performance.now();
       try {
         const res = await fetch(path, { cache: "no-store" });
@@ -1770,187 +1935,183 @@
       }
     }
 
-    async function refreshTelemetry() {
-      const [h, r] = await Promise.all([probeEndpoint("/health"), probeEndpoint("/ready")]);
-
-      const dotH = document.getElementById("dot-health");
-      const dotR = document.getElementById("dot-ready");
-      dotH.className = "dot " + (h.ok ? "ok" : "err");
-      dotR.className = "dot " + (r.ok ? "ok" : "err");
+    async function loadTelemetry() {
+      const [h, r] = await Promise.all([probe("/health"), probe("/ready")]);
+      document.getElementById("led-health").className = "led " + (h.ok ? "ok" : "err");
+      document.getElementById("led-ready").className = "led " + (r.ok ? "ok" : "err");
+      document.getElementById("live-env").textContent = h.ok ? `${(h.data.environment || "live").toUpperCase()} · ONLINE` : "OFFLINE";
 
       document.getElementById("health-ms").textContent = `${h.ms} ms`;
-      const hCode = document.getElementById("health-code");
-      hCode.textContent = `HTTP ${h.status}`;
-      hCode.className = "probe-val " + (h.ok ? "ok" : "err");
-      document.getElementById("health-sub").textContent = h.ok
-        ? `env: ${h.data.environment} · uptime: ${h.data.uptime_seconds}s`
-        : "Không phản hồi";
+      const hc = document.getElementById("health-code");
+      hc.textContent = `HTTP ${h.status}`;
+      hc.className = "probe-num " + (h.ok ? "ok" : "err");
+      document.getElementById("health-sub").textContent = h.ok ? `uptime ${h.data.uptime_seconds}s` : "Unreachable";
 
       document.getElementById("ready-ms").textContent = `${r.ms} ms`;
-      const rCode = document.getElementById("ready-code");
-      rCode.textContent = `HTTP ${r.status}`;
-      rCode.className = "probe-val " + (r.ok ? "ok" : "err");
-      document.getElementById("ready-sub").textContent = r.ok
-        ? `redis: ${r.data.redis || "ok"}`
-        : (r.data.detail || "Redis chưa kết nối");
+      const rc = document.getElementById("ready-code");
+      rc.textContent = `HTTP ${r.status}`;
+      rc.className = "probe-num " + (r.ok ? "ok" : "err");
+      document.getElementById("ready-sub").textContent = r.ok ? `redis: ${r.data.redis || "ok"}` : (r.data.detail || "Redis offline");
 
-      document.getElementById("hero-live-json").textContent = JSON.stringify(
-        { health: h.data, ready: r.data },
-        null,
-        2
-      );
+      document.getElementById("hero-json").textContent = JSON.stringify({ health: h.data, ready: r.data }, null, 2);
     }
-    refreshTelemetry();
+    loadTelemetry();
 
-    // ── 3. Interactive Tail Latency Switcher (Real Data) ──
-    const TAIL_DATA = {
-      "0": {
-        avg: 189.6, p95: 229.8, p99: 236.4, slo: "PASS", p95Class: "ok",
-        note: "Khi không có request chậm bất thường, avg (189.6 ms), p95 (229.8 ms) và p99 (236.4 ms) rất sát nhau."
-      },
-      "0.03": {
-        avg: 261.2, p95: 262.4, p99: 1695.0, slo: "PASS", p95Class: "ok",
-        note: "Chỉ 3% request chậm: avg trông vẫn đẹp (261.2 ms), nhưng p99 đã vọt lên 1695.0 ms — trung bình hoàn toàn che giấu nhóm người dùng chờ gần 2 giây."
-      },
-      "0.1": {
-        avg: 327.0, p95: 1694.7, p99: 1724.3, slo: "FAIL", p95Class: "danger",
-        note: "Ở mức 10% request chậm (> 5%): avg mới tăng lên 327.0 ms, nhưng cả p95 cũng vọt lên 1694.7 ms và phá vỡ SLO ≤ 500 ms."
-      }
+    // ── 3. Interactive Security Gate (CP3) ────────────────
+    const GATES = {
+      "401": { cls: "c401", title: "Unauthorized — Chặn tại lớp Authentication", desc: "Thiếu hoặc sai header X-API-Key bị từ chối ngay tại cửa, không tốn token LLM." },
+      "200": { cls: "c200", title: "OK — Request hợp lệ được phục vụ", desc: "Vượt qua cả 3 lớp kiểm tra (Auth → Rate Limit → Cost Guard), trả câu trả lời kèm usage token/cost." },
+      "429": { cls: "c429", title: "Too Many Requests — Chạm trần 10 req/phút", desc: "Request #11 bị chặn bởi Sliding Window trên Redis kèm header Retry-After: 59." },
+      "402": { cls: "c402", title: "Payment Required — Chạm trần ngân sách", desc: "Tổng chi phí tích lũy trên Redis (INCRBYFLOAT) đạt ngưỡng DAILY_BUDGET_USD → khóa van gọi LLM." }
+    };
+
+    document.querySelectorAll(".gate-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".gate-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const code = btn.dataset.gate;
+        const g = GATES[code];
+        const codeEl = document.getElementById("gate-code");
+        codeEl.textContent = code;
+        codeEl.className = "gate-code " + g.cls;
+        document.getElementById("gate-title").textContent = g.title;
+        document.getElementById("gate-desc").textContent = g.desc;
+        if (window.gsap && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          gsap.fromTo("#gate-stage", { scale: 0.985, opacity: 0.7 }, { scale: 1, opacity: 1, duration: 0.25, ease: "power2.out" });
+        }
+      });
+    });
+
+    // ── 4. Interactive Tail Latency (CP7) ─────────────────
+    const TAIL = {
+      "0": { avg: 189.6, p95: 229.8, p99: 236.4, slo: "PASS", cls: "emerald", note: "Khi không có request chậm, avg (189.6 ms), p95 (229.8 ms) và p99 (236.4 ms) gần sát nhau." },
+      "0.03": { avg: 261.2, p95: 262.4, p99: 1695.0, slo: "PASS", cls: "emerald", note: "Chỉ 3% request chậm: avg vẫn nhỏ (261.2 ms), nhưng p99 vọt lên 1695.0 ms — trung bình đã che giấu hoàn toàn nhóm người dùng phải chờ gần 2 giây." },
+      "0.1": { avg: 327.0, p95: 1694.7, p99: 1724.3, slo: "FAIL", cls: "rose", note: "Ở mức 10% request chậm (> 5%): avg chỉ tăng nhẹ lên 327.0 ms, nhưng p95 đã vọt qua vạch đỏ SLO (1694.7 ms > 500 ms)." }
     };
 
     document.querySelectorAll(".seg-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".seg-btn").forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
-        const d = TAIL_DATA[btn.dataset.slow];
-        const maxMs = 1800;
-        document.getElementById("tail-avg-val").textContent = `${d.avg} ms`;
-        document.getElementById("tail-p95-val").textContent = `${d.p95} ms · ${d.slo}`;
-        document.getElementById("tail-p99-val").textContent = `${d.p99} ms`;
-        document.getElementById("tail-note").textContent = d.note;
+        const d = TAIL[btn.dataset.slow];
+        const cap = 1800;
+        document.getElementById("t-avg").textContent = `${d.avg} ms`;
+        document.getElementById("t-p95").textContent = `${d.p95} ms · ${d.slo}`;
+        document.getElementById("t-p99").textContent = `${d.p99} ms`;
+        document.getElementById("t-note").textContent = d.note;
 
-        const p95Bar = document.getElementById("tail-p95-bar");
-        p95Bar.className = "bar-fill " + d.p95Class;
-
-        const avgW = Math.min(100, (d.avg / maxMs) * 100) + "%";
-        const p95W = Math.min(100, (d.p95 / maxMs) * 100) + "%";
-        const p99W = Math.min(100, (d.p99 / maxMs) * 100) + "%";
+        const bp95 = document.getElementById("b-p95");
+        bp95.className = "bar-fill " + d.cls;
+        const wAvg = Math.min(100, d.avg / cap * 100) + "%";
+        const w95 = Math.min(100, d.p95 / cap * 100) + "%";
+        const w99 = Math.min(100, d.p99 / cap * 100) + "%";
 
         if (window.gsap && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-          gsap.to("#tail-avg-bar", { width: avgW, duration: 0.45, ease: "power2.out" });
-          gsap.to("#tail-p95-bar", { width: p95W, duration: 0.45, ease: "power2.out" });
-          gsap.to("#tail-p99-bar", { width: p99W, duration: 0.45, ease: "power2.out" });
+          gsap.to("#b-avg", { width: wAvg, duration: 0.5, ease: "power3.out" });
+          gsap.to("#b-p95", { width: w95, duration: 0.5, ease: "power3.out" });
+          gsap.to("#b-p99", { width: w99, duration: 0.5, ease: "power3.out" });
         } else {
-          document.getElementById("tail-avg-bar").style.width = avgW;
-          p95Bar.style.width = p95W;
-          document.getElementById("tail-p99-bar").style.width = p99W;
+          document.getElementById("b-avg").style.width = wAvg;
+          bp95.style.width = w95;
+          document.getElementById("b-p99").style.width = w99;
         }
       });
     });
 
-    // ── 4. Lightbox for Real Screenshots ──────────────────
-    const lightbox = document.getElementById("lightbox");
-    const lbImg = document.getElementById("lightbox-img");
-    const lbCap = document.getElementById("lightbox-caption");
+    // ── 5. Lightbox ───────────────────────────────────────
+    const lb = document.getElementById("lightbox");
+    const lbImg = document.getElementById("lb-img");
+    const lbCap = document.getElementById("lb-cap");
+    function closeLb() { lb.classList.remove("open"); }
 
-    function closeLightbox() { lightbox.classList.remove("open"); }
-
-    document.querySelectorAll(".shot-card").forEach((card) => {
-      card.addEventListener("click", () => {
-        lbImg.src = card.dataset.src;
-        lbImg.alt = card.dataset.caption;
-        lbCap.textContent = card.dataset.caption;
-        lightbox.classList.add("open");
+    document.querySelectorAll(".shot-tile").forEach((t) => {
+      t.addEventListener("click", () => {
+        lbImg.src = t.dataset.src;
+        lbImg.alt = t.dataset.caption;
+        lbCap.textContent = t.dataset.caption;
+        lb.classList.add("open");
       });
     });
+    document.getElementById("lb-close").addEventListener("click", closeLb);
+    lb.addEventListener("click", (e) => { if (e.target === lb) closeLb(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLb(); });
 
-    document.getElementById("lightbox-close").addEventListener("click", closeLightbox);
-    lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLightbox(); });
+    // ── 6. Live API Console ───────────────────────────────
+    const outEp = document.getElementById("out-ep");
+    const outSt = document.getElementById("out-st");
+    const outPre = document.getElementById("out-pre");
 
-    // ── 5. Live API Console ───────────────────────────────
-    const outEp = document.getElementById("out-endpoint");
-    const outSt = document.getElementById("out-status");
-    const outBody = document.getElementById("out-body");
-
-    async function callConsole(method, path, headers = {}, body = null) {
+    async function runApi(method, path, headers = {}, body = null) {
       outEp.textContent = `${method} ${path}`;
       outSt.textContent = "Đang gọi...";
       const t0 = performance.now();
       try {
-        const res = await fetch(path, {
-          method,
-          headers,
-          body: body ? JSON.stringify(body) : undefined,
-        });
+        const res = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : undefined });
         const ms = Math.round(performance.now() - t0);
-        const retryAfter = res.headers.get("retry-after");
-        let parsed;
-        try { parsed = await res.json(); } catch { parsed = await res.text(); }
-        outSt.textContent = `HTTP ${res.status} · ${ms} ms` + (retryAfter ? ` · Retry-After: ${retryAfter}s` : "");
-        outSt.style.color = res.ok ? "#6EE7B7" : (res.status === 429 ? "#FBBF24" : "#FDA4AF");
-        outBody.textContent = typeof parsed === "string" ? parsed : JSON.stringify(parsed, null, 2);
+        const retry = res.headers.get("retry-after");
+        let payload;
+        try { payload = await res.json(); } catch { payload = await res.text(); }
+        outSt.textContent = `HTTP ${res.status} · ${ms} ms` + (retry ? ` · Retry-After: ${retry}s` : "");
+        outSt.style.color = res.ok ? "#6EE7B7" : (res.status === 429 ? "#FCD34D" : "#FDA4AF");
+        outPre.textContent = typeof payload === "string" ? payload : JSON.stringify(payload, null, 2);
       } catch (err) {
         outSt.textContent = "Lỗi kết nối";
         outSt.style.color = "#FDA4AF";
-        outBody.textContent = String(err);
+        outPre.textContent = String(err);
       }
     }
 
-    document.getElementById("btn-test-health").addEventListener("click", () => callConsole("GET", "/health"));
-    document.getElementById("btn-test-ready").addEventListener("click", () => callConsole("GET", "/ready"));
-    document.getElementById("btn-test-401").addEventListener("click", () => {
+    document.getElementById("btn-h").addEventListener("click", () => runApi("GET", "/health"));
+    document.getElementById("btn-r").addEventListener("click", () => runApi("GET", "/ready"));
+    document.getElementById("btn-401").addEventListener("click", () => {
       const q = document.getElementById("question-input").value.trim() || "Hello";
-      callConsole("POST", "/ask", { "Content-Type": "application/json" }, { question: q });
+      runApi("POST", "/ask", { "Content-Type": "application/json" }, { question: q });
     });
-    document.getElementById("btn-send-ask").addEventListener("click", () => {
+    document.getElementById("btn-ask").addEventListener("click", () => {
       const key = document.getElementById("api-key-input").value.trim();
       const q = document.getElementById("question-input").value.trim() || "Hello";
-      const headers = { "Content-Type": "application/json" };
-      if (key) headers["X-API-Key"] = key;
-      callConsole("POST", "/ask", headers, { question: q, user_id: "web-visitor" });
+      const h = { "Content-Type": "application/json" };
+      if (key) h["X-API-Key"] = key;
+      runApi("POST", "/ask", h, { question: q, user_id: "web-visitor" });
     });
 
-    // ── 6. GSAP Motion (Orchestrated & Restraint-first) ───
+    // ── 7. GSAP Choreography ──────────────────────────────
     window.addEventListener("DOMContentLoaded", () => {
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduced || !window.gsap) {
-        document.querySelectorAll(".anim-bar").forEach((b) => { b.style.width = b.dataset.width; });
-        document.getElementById("timeline-rail-fill").style.height = "100%";
+        document.querySelectorAll(".anim-bar").forEach((b) => { b.style.width = b.dataset.w; });
+        document.getElementById("progress-fill").style.height = "100%";
         return;
       }
 
       gsap.registerPlugin(ScrollTrigger);
 
-      // Hero orchestrated entrance
-      gsap.from(".hero-reveal", {
-        y: 22,
+      gsap.from(".hero-in", {
+        y: 26,
         opacity: 0,
-        duration: 0.72,
-        stagger: 0.09,
+        duration: 0.85,
+        stagger: 0.08,
         ease: "power3.out",
         clearProps: "transform,opacity"
       });
 
-      // Scrubbed vertical drafting spine across CP1–CP8
-      gsap.to("#timeline-rail-fill", {
+      gsap.to("#progress-fill", {
         height: "100%",
         ease: "none",
         scrollTrigger: {
-          trigger: "#timeline",
-          start: "top 65%",
-          end: "bottom 75%",
-          scrub: 0.35
+          trigger: document.body,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 0.25
         }
       });
 
-      // Clean chapter entrance
-      gsap.utils.toArray(".chapter").forEach((card) => {
+      gsap.utils.toArray(".reveal-card").forEach((card) => {
         gsap.from(card, {
-          y: 24,
+          y: 30,
           opacity: 0,
-          duration: 0.6,
-          ease: "power2.out",
+          duration: 0.72,
+          ease: "power3.out",
           clearProps: "transform,opacity",
           scrollTrigger: {
             trigger: card,
@@ -1960,11 +2121,10 @@
         });
       });
 
-      // Animated metric bars (Docker size & Eval progression)
       gsap.utils.toArray(".anim-bar").forEach((bar) => {
         gsap.to(bar, {
-          width: bar.dataset.width,
-          duration: 0.9,
+          width: bar.dataset.w,
+          duration: 1.0,
           ease: "power3.out",
           scrollTrigger: {
             trigger: bar,
