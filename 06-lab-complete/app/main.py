@@ -3,12 +3,13 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 import json
 import logging
+from pathlib import Path
 import signal
 import sys
 import time
 
 from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 
 from app.auth import verify_api_key
@@ -108,6 +109,39 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 class AskRequest(BaseModel):
     question: str = Field(..., min_length=1, max_length=2000)
     user_id: str | None = Field(default="anonymous", max_length=128)
+
+
+APP_DIR = Path(__file__).resolve().parent
+INDEX_HTML_PATH = APP_DIR / "index.html"
+STATIC_DIR = APP_DIR / "static"
+ALLOWED_ASSETS = {
+    "dashboard.png",
+    "running.png",
+    "test.png",
+    "grafana-dashboard.png",
+    "jaeger-slow-trace.png",
+    "jaeger-error-trace.png",
+    "prometheus-alert-firing.png",
+}
+
+
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
+def landing_page():
+    """Trang giới thiệu hành trình Day 14 và bảng kiểm thử live API."""
+    if not INDEX_HTML_PATH.exists():
+        return HTMLResponse("<h1>Production AI Agent</h1>", status_code=200)
+    return HTMLResponse(INDEX_HTML_PATH.read_text(encoding="utf-8"))
+
+
+@app.get("/assets/{filename}", include_in_schema=False)
+def serve_asset(filename: str):
+    """Phục vụ các ảnh bằng chứng của bài lab theo danh sách trắng an toàn."""
+    if filename not in ALLOWED_ASSETS:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    path = STATIC_DIR / filename
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Asset not found")
+    return FileResponse(path, media_type="image/png")
 
 
 @app.get("/health")

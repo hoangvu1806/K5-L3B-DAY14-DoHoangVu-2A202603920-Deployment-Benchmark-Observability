@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Day 14 Flight Deck — Do Hoang Vu · K5-L3B</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <style>
+    :root {
+      --paper: #EDF1F5;
+      --surface: #FFFFFF;
+      --surface-alt: #E2E8F0;
+      --ink: #0F1C2E;
+      --muted: #4D6075;
+      --line: #CBD5E1;
+      --line-strong: #94A3B8;
+      --signal: #0052CC;
+      --signal-soft: #E6F0FF;
+      --ok: #0E7C5B;
+      --ok-soft: #E3F7F0;
+      --amber: #D95D00;
+      --amber-soft: #FFF1E6;
+      --danger: #C81E3A;
+      --danger-soft: #FDECEF;
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --shadow-card: 0 1px 2px rgba(15, 28, 46, 0.05), 0 8px 24px rgba(15, 28, 46, 0.04);
+      --shadow-lift: 0 12px 30px rgba(15, 28, 46, 0.10);
+      --font-display: 'Space Grotesk', 'Be Vietnam Pro', sans-serif;
+      --font-body: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-color: var(--paper);
+    }
+
+    a { color: var(--signal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
+      outline: 2px solid var(--signal);
+      outline-offset: 2px;
+    }
+
+    .container {
+      width: min(1180px, 92vw);
+      margin: 0 auto;
+    }
+
+    /* ── Sticky Top Instrument Bar ───────────────────────── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: rgba(237, 241, 245, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 62px;
+      padding: 8px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+    }
+
+    .brand-mark {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: var(--ink);
+      color: #FFFFFF;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 13.5px;
+      font-weight: 500;
+    }
+
+    .nav-links a { color: var(--muted); transition: color 0.18s; }
+    .nav-links a:hover { color: var(--ink); text-decoration: none; }
+
+    .live-pills {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--line-strong);
+      flex-shrink: 0;
+    }
+    .dot.ok { background: var(--ok); box-shadow: 0 0 0 3px rgba(14, 124, 91, 0.18); }
+    .dot.err { background: var(--danger); box-shadow: 0 0 0 3px rgba(200, 30, 58, 0.18); }
+
+    .btn-docs {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      background: var(--ink);
+      color: #FFFFFF;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .btn-docs:hover { background: var(--signal); text-decoration: none; transform: translateY(-1px); }
+
+    /* ── Hero Section (Blueprint Drafting Grid) ──────────── */
+    .hero {
+      position: relative;
+      padding: 64px 0 72px;
+      background-image:
+        linear-gradient(to right, rgba(15, 28, 46, 0.045) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(15, 28, 46, 0.045) 1px, transparent 1px);
+      background-size: 28px 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--signal);
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4.4vw, 3.55rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 span.accent { color: var(--signal); }
+
+    .hero-lead {
+      font-size: 16.5px;
+      color: var(--muted);
+      max-width: 58ch;
+      margin-bottom: 26px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .btn-primary, .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14.5px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+    }
+
+    .btn-primary {
+      background: var(--signal);
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(0, 82, 204, 0.24);
+    }
+    .btn-primary:hover { background: #003FA3; transform: translateY(-1px); text-decoration: none; }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--ink);
+      border-color: var(--line-strong);
+    }
+    .btn-secondary:hover { border-color: var(--ink); transform: translateY(-1px); text-decoration: none; }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      padding-top: 18px;
+      border-top: 1px dashed var(--line-strong);
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+    .hero-meta strong { color: var(--ink); }
+
+    /* Live Telemetry Instrument Card */
+    .telemetry-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    .telemetry-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: var(--ink);
+      color: #FFFFFF;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .telemetry-head .tag-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #6EE7B7;
+      font-weight: 600;
+    }
+
+    .telemetry-body {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .probe-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .probe-box {
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: var(--paper);
+      border: 1px solid var(--line);
+    }
+
+    .probe-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .probe-val {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .probe-val.ok { color: var(--ok); }
+    .probe-val.err { color: var(--danger); }
+
+    .probe-sub {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .kpi-mini {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #FAFBFD;
+    }
+
+    .kpi-mini .k {
+      font-size: 11px;
+      color: var(--muted);
+      display: block;
+    }
+
+    .kpi-mini .v {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .live-json {
+      background: #0F1C2E;
+      color: #D7E3F4;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    /* ── Common Section Styling ──────────────────────────── */
+    section.block {
+      padding: 76px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--signal);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.7rem, 3vw, 2.35rem);
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+    }
+
+    .section-desc {
+      max-width: 56ch;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    /* ── Interactive Stack Explorer ──────────────────────── */
+    .stack-layout {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .stack-nodes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .stack-node {
+      text-align: left;
+      padding: 15px 14px;
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      cursor: pointer;
+      transition: border-color 0.16s, transform 0.16s, box-shadow 0.16s, background 0.16s;
+      font-family: inherit;
+    }
+
+    .stack-node:hover {
+      border-color: var(--signal);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-card);
+    }
+
+    .stack-node.active {
+      border-color: var(--signal);
+      background: var(--signal-soft);
+      box-shadow: 0 0 0 1px var(--signal);
+    }
+
+    .stack-node .layer {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .stack-node.active .layer { color: var(--signal); }
+
+    .stack-node .name {
+      font-family: var(--font-display);
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--ink);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .stack-node .brief {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .stack-inspector {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+      position: sticky;
+      top: 82px;
+    }
+
+    .inspector-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--signal-soft);
+      color: var(--signal);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .stack-inspector h3 {
+      font-family: var(--font-display);
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: var(--ink);
+    }
+
+    .inspector-section {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .inspector-section h4 {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .inspector-section p {
+      font-size: 14.5px;
+      color: var(--ink);
+    }
+
+    .inspector-metric {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--paper);
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--ink);
+      border-left: 3px solid var(--signal);
+    }
+
+    /* ── Scrubbed Timeline (CP1 → CP8) ───────────────────── */
+    .timeline-wrap {
+      position: relative;
+      padding-left: 44px;
+    }
+
+    .timeline-rail {
+      position: absolute;
+      left: 15px;
+      top: 12px;
+      bottom: 12px;
+      width: 3px;
+      background: var(--line);
+      border-radius: 3px;
+    }
+
+    .timeline-rail-fill {
+      width: 100%;
+      height: 0%;
+      background: var(--signal);
+      border-radius: 3px;
+    }
+
+    .chapter {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .chapter::before {
+      content: "";
+      position: absolute;
+      left: -36px;
+      top: 32px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 3px solid var(--signal);
+      box-shadow: 0 0 0 4px var(--paper);
+    }
+
+    .chapter-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .cp-tag {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--signal);
+      background: var(--signal-soft);
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .chapter h3 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+
+    .status-chip {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: var(--ok-soft);
+      color: var(--ok);
+      border: 1px solid rgba(14, 124, 91, 0.2);
+    }
+
+    .chapter-body {
+      font-size: 14.5px;
+      color: var(--muted);
+    }
+
+    .chapter-body p + p { margin-top: 10px; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .compare-box {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      background: var(--paper);
+      border: 1px solid var(--line);
+    }
+
+    .compare-box h4 {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .compare-box.bad h4 { color: var(--danger); }
+    .compare-box.good h4 { color: var(--ok); }
+
+    .compare-box ul {
+      list-style: none;
+      display: grid;
+      gap: 6px;
+      font-size: 13.5px;
+      color: var(--ink);
+    }
+
+    /* Animated Metric Bars */
+    .bar-group {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .bar-item-head {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    .bar-track {
+      height: 14px;
+      border-radius: 999px;
+      background: var(--surface-alt);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: var(--signal);
+    }
+    .bar-fill.muted { background: #64748B; }
+    .bar-fill.ok { background: var(--ok); }
+    .bar-fill.amber { background: var(--amber); }
+    .bar-fill.danger { background: var(--danger); }
+
+    /* Code HTTP Status Badges */
+    .http-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .http-card {
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: #FAFBFD;
+    }
+
+    .http-code {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .http-code.c200 { color: var(--ok); }
+    .http-code.c401 { color: var(--danger); }
+    .http-code.c429 { color: var(--amber); }
+    .http-code.c402 { color: var(--signal); }
+
+    .http-card p { font-size: 13px; color: var(--muted); }
+
+    /* 12-Criterion Grid */
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .check-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 9px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .check-mark {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--ok);
+      color: #FFFFFF;
+      display: inline-grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* Evidence Screenshot Gallery */
+    .shot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .shot-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      cursor: zoom-in;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      text-align: left;
+      padding: 0;
+      font-family: inherit;
+    }
+
+    .shot-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--signal);
+      box-shadow: var(--shadow-lift);
+    }
+
+    .shot-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      display: block;
+      background: #0F1C2E;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .shot-cap {
+      padding: 10px 12px;
+    }
+
+    .shot-cap strong {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+
+    .shot-cap span {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Tail Latency Interactive Switcher */
+    .tail-box {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: var(--radius-md);
+      background: var(--paper);
+      border: 1px solid var(--line);
+    }
+
+    .seg-tabs {
+      display: inline-flex;
+      gap: 6px;
+      background: var(--surface);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      margin-bottom: 14px;
+    }
+
+    .seg-btn {
+      padding: 6px 12px;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .seg-btn.active {
+      background: var(--ink);
+      color: #FFFFFF;
+    }
+
+    /* Data Tables */
+    .data-table-wrap {
+      overflow-x: auto;
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      background: var(--surface);
+    }
+
+    table.data-table th, table.data-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+    }
+
+    table.data-table th {
+      background: var(--paper);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+
+    table.data-table tr:last-child td { border-bottom: 0; }
+    table.data-table td.mono { font-family: var(--font-mono); font-size: 12.5px; }
+
+    .badge-pass {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--ok-soft);
+      color: var(--ok);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 700;
+    }
+
+    .badge-fail {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--danger-soft);
+      color: var(--danger);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 700;
+    }
+
+    /* Trace Log Snippet */
+    .trace-box {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      background: #0F1C2E;
+      color: #E2ECF8;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      overflow-x: auto;
+    }
+
+    .trace-box .trace-title {
+      color: #93C5FD;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    /* ── Live API Console ────────────────────────────────── */
+    .console-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .console-panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .field-group { margin-bottom: 14px; }
+    .field-group label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .field-group input, .field-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 9px;
+      border: 1px solid var(--line-strong);
+      background: #FAFBFD;
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 14px;
+    }
+
+    .field-group input.mono { font-family: var(--font-mono); font-size: 13px; }
+
+    .quick-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .btn-mini {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--line-strong);
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-mini:hover { border-color: var(--signal); color: var(--signal); }
+
+    .console-output {
+      background: #0F1C2E;
+      color: #E2ECF8;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      min-height: 290px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .console-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 12px;
+      color: #94A3B8;
+    }
+
+    .console-pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.55;
+      color: #E2ECF8;
+      flex: 1;
+    }
+
+    /* ── Lightbox Modal ──────────────────────────────────── */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 120;
+      background: rgba(15, 28, 46, 0.86);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .lightbox.open { display: flex; }
+
+    .lightbox-inner {
+      max-width: min(1120px, 95vw);
+      max-height: 92vh;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .lightbox-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 18px;
+      background: var(--ink);
+      color: #FFFFFF;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    .lightbox-close {
+      background: rgba(255, 255, 255, 0.14);
+      border: 0;
+      color: #FFFFFF;
+      padding: 5px 12px;
+      border-radius: 7px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .lightbox-close:hover { background: var(--danger); }
+
+    .lightbox-img {
+      max-width: 100%;
+      max-height: calc(92vh - 54px);
+      object-fit: contain;
+      background: #0B1320;
+      display: block;
+    }
+
+    /* ── Footer ──────────────────────────────────────────── */
+    footer {
+      padding: 36px 0 48px;
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    /* ── Responsive ──────────────────────────────────────── */
+    @media (max-width: 960px) {
+      .hero-grid, .stack-layout, .console-grid, .two-col {
+        grid-template-columns: 1fr;
+      }
+      .stack-nodes { grid-template-columns: repeat(2, 1fr); }
+      .http-row { grid-template-columns: repeat(2, 1fr); }
+      .check-grid { grid-template-columns: repeat(2, 1fr); }
+      .nav-links { display: none; }
+      .stack-inspector { position: static; }
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 40px 0 48px; }
+      section.block { padding: 52px 0; }
+      .timeline-wrap { padding-left: 28px; }
+      .timeline-rail { left: 7px; }
+      .chapter { padding: 20px; }
+      .chapter::before { left: -27px; width: 13px; height: 13px; }
+      .stack-nodes, .check-grid, .kpi-strip, .probe-row { grid-template-columns: 1fr; }
+      .live-pills .pill:nth-child(2) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation & Live Status -->
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <span class="brand-mark">14</span>
+        <span>K5-L3B · FLIGHT DECK</span>
+      </div>
+      <nav class="nav-links" aria-label="Điều hướng chính">
+        <a href="#stack">Bộ đồ nghề</a>
+        <a href="#journey">Hành trình CP1–CP8</a>
+        <a href="#console">Thử API Live</a>
+      </nav>
+      <div class="live-pills">
+        <span class="pill" id="pill-health"><span class="dot" id="dot-health"></span>/health</span>
+        <span class="pill" id="pill-ready"><span class="dot" id="dot-ready"></span>/ready</span>
+        <a class="btn-docs" href="/docs">/docs ↗</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero: Thesis + Live Production Telemetry -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow">AICB-P1 · VINUNIVERSITY 2026 · DAY 14 LAB</div>
+        <h1 class="hero-reveal">Từ <span class="accent">Localhost</span> đến Production AI Service.</h1>
+        <p class="hero-lead hero-reveal">
+          Nhật ký kỹ thuật ghi lại toàn bộ 8 chặng biến một AI agent chạy cục bộ thành dịch vụ cloud
+          đạt <strong>PASS 12/12</strong>: đóng gói multi-stage Docker 160 MB, bảo vệ 3 lớp trên Redis,
+          deploy sống trên Railway, benchmark tail latency, kiểm định chất lượng 23/23 câu và giám sát thời gian thực.
+        </p>
+        <div class="hero-actions hero-reveal">
+          <a class="btn-primary" href="#journey">Xem hành trình 8 chặng ↓</a>
+          <a class="btn-secondary" href="#console">Kiểm thử API trực tiếp</a>
+        </div>
+        <div class="hero-meta hero-reveal">
+          <span>Học viên: <strong>Do Hoang Vu</strong></span>
+          <span>MSSV: <strong>2A202603920</strong></span>
+          <span>Lớp: <strong>K5-L3B</strong></span>
+        </div>
+      </div>
+
+      <!-- Live Telemetry Panel (actually fetches /health and /ready from this running server) -->
+      <aside class="telemetry-card hero-reveal" aria-label="Bảng đo thời gian thực">
+        <div class="telemetry-head">
+          <span>LIVE PRODUCTION TELEMETRY</span>
+          <span class="tag-live"><span class="dot ok"></span>ONLINE</span>
+        </div>
+        <div class="telemetry-body">
+          <div class="probe-row">
+            <div class="probe-box">
+              <div class="probe-label"><span>GET /health</span><span id="health-ms">-- ms</span></div>
+              <div class="probe-val" id="health-code">Đang đo...</div>
+              <div class="probe-sub" id="health-sub">Liveness probe</div>
+            </div>
+            <div class="probe-box">
+              <div class="probe-label"><span>GET /ready</span><span id="ready-ms">-- ms</span></div>
+              <div class="probe-val" id="ready-code">Đang đo...</div>
+              <div class="probe-sub" id="ready-sub">Readiness + Redis</div>
+            </div>
+          </div>
+
+          <div class="kpi-strip">
+            <div class="kpi-mini">
+              <span class="k">Part 6 Checker</span>
+              <span class="v">12/12 PASS</span>
+            </div>
+            <div class="kpi-mini">
+              <span class="k">Docker Image</span>
+              <span class="v">160 MB</span>
+            </div>
+            <div class="kpi-mini">
+              <span class="k">Eval v2 + KB</span>
+              <span class="v">23/23 (100%)</span>
+            </div>
+          </div>
+
+          <div class="live-json" id="hero-live-json">// Đang gọi /health và /ready của chính server này...</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Section 1: Interactive Stack Explorer -->
+  <section class="block" id="stack">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="section-tag">01 · Kiến trúc &amp; Bộ đồ nghề</div>
+          <h2 class="section-title">Mỗi công cụ trong hệ thống làm gì?</h2>
+        </div>
+        <p class="section-desc">
+          Bấm vào từng khối để xem vai trò thực tế của nó trong hành trình đưa AI agent từ laptop lên production.
+        </p>
+      </div>
+
+      <div class="stack-layout">
+        <div class="stack-nodes" id="stack-nodes" role="tablist" aria-label="Các thành phần trong stack"></div>
+        <div class="stack-inspector" id="stack-inspector" role="tabpanel" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Chronological Journey CP1 → CP8 -->
+  <section class="block" id="journey">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="section-tag">02 · Nhật ký thực hành tuần tự</div>
+          <h2 class="section-title">Hành trình 8 chặng (CP1 → CP8)</h2>
+        </div>
+        <p class="section-desc">
+          Mọi con số, log và ảnh chụp dưới đây đều được thu thập trực tiếp từ các lần chạy thực tế của bài lab.
+        </p>
+      </div>
+
+      <div class="timeline-wrap" id="timeline">
+        <div class="timeline-rail" aria-hidden="true">
+          <div class="timeline-rail-fill" id="timeline-rail-fill"></div>
+        </div>
+
+        <!-- CP1 -->
+        <article class="chapter">
+          <div class="chapter-head">
+            <div>
+              <span class="cp-tag">CP1 · PART 1 · 12-FACTOR APP</span>
+              <h3>Nhận diện anti-pattern &amp; chuẩn hóa Production</h3>
+            </div>
+            <span class="status-chip">Hoàn thành</span>
+          </div>
+          <div class="chapter-body">
+            <p>So sánh trực tiếp bản <code>develop/app.py</code> ("chạy được trên laptop") với <code>production/app.py</code> tuân thủ nguyên tắc 12-Factor để loại bỏ các lỗi chết người trước khi đóng gói.</p>
+          </div>
+          <div class="two-col">
+            <div class="compare-box bad">
+              <h4>Anti-patterns ở bản develop</h4>
+              <ul>
+                <li>• Hardcode <code>OPENAI_API_KEY</code> &amp; <code>DATABASE_URL</code> trong code</li>
+                <li>• Dùng <code>print()</code> in thẳng API key ra stdout</li>
+                <li>• Không có <code>/health</code> và <code>/ready</code></li>
+                <li>• Cố định <code>localhost:8000</code> và bật <code>reload=True</code></li>
+              </ul>
+            </div>
+            <div class="compare-box good">
+              <h4>Chuẩn hóa ở bản production</h4>
+              <ul>
+                <li>• Đọc cấu hình qua <code>os.getenv</code> + fail-fast <code>validate()</code></li>
+                <li>• Ghi log dạng JSON cấu trúc, không rò rỉ secret</li>
+                <li>• Có liveness <code>/health</code> và readiness <code>/ready</code></li>
+                <li>• Bind <code>0.0.0.0:$PORT</code> + <code>lifespan</code> xử lý <code>SIGTERM</code></li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <!-- CP2 -->
+        <article class="chapter">
+          <div class="chapter-head">
+            <div>
+              <span class="cp-tag">CP2 · PART 2 · DOCKER CONTAINERIZATION</span>
+              <h3>Đóng gói Multi-stage &amp; tối ưu 85.9% dung lượng image</h3>
+            </div>
+            <span class="status-chip">1.15 GB → 163 MB</span>
+          </div>
+          <div class="chapter-body">
+            <p>Tách <code>Dockerfile</code> thành 2 stage: <code>builder</code> cài trình biên dịch &amp; thư viện, còn <code>runtime</code> bắt đầu lại từ <code>python:3.11-slim</code> sạch với user <code>non-root</code>. Đồng thời chạy cụm 4 service (Nginx → Agent → Redis &amp; Qdrant) qua mạng nội bộ Docker Compose.</p>
+          </div>
+          <div class="bar-group">
+            <div>
+              <div class="bar-item-head">
+                <span>my-agent:develop (python:3.11 full, single-stage)</span>
+                <strong>1.15 GB (1,100.84 MiB)</strong>
+              </div>
+              <div class="bar-track"><div class="bar-fill muted anim-bar" data-width="100%"></div></div>
+            </div>
+            <div>
+              <div class="bar-item-head">
+                <span>my-agent:advanced (python:3.11-slim, multi-stage + non-root)</span>
+                <strong>163 MB (155.34 MiB · −85.9%)</strong>
+              </div>
+              <div class="bar-track"><div class="bar-fill ok anim-bar" data-width="14.1%"></div></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- CP3 -->
+        <article class="chapter">
+          <div class="chapter-head">
+            <div>
+              <span class="cp-tag">CP3 · PART 4 · API SECURITY</span>
+              <h3>Ba lớp bảo vệ: Xác thực, Giới hạn tốc độ &amp; Khóa ngân sách</h3>
+            </div>
+            <span class="status-chip">401 · 200 · 429 · 402</span>
+          </div>
+          <div class="chapter-body">
+            <p>Khi API mở ra Internet, phải chặn đồng thời truy cập trái phép, spam request và nguy cơ "cháy ví" LLM. Thử nghiệm thực tế với <code>X-API-Key</code>, JWT <code>POST /auth/token</code> (<code>student</code> / <code>10 req/phút</code>) và Cost Guard dùng Redis <code>INCRBYFLOAT</code>.</p>
+          </div>
+          <div class="http-row">
+            <div class="http-card">
+              <div class="http-code c401">401</div>
+              <p>Thiếu hoặc sai <code>X-API-Key</code> bị từ chối ngay tại cửa.</p>
+            </div>
+            <div class="http-card">
+              <div class="http-code c200">200</div>
+              <p>Key / JWT hợp lệ được phục vụ (Request #1 → #10).</p>
+            </div>
+            <div class="http-card">
+              <div class="http-code c429">429</div>
+              <p>Request #11 vượt 10 req/phút, trả kèm <code>Retry-After: 59</code>.</p>
+            </div>
+            <div class="http-card">
+              <div class="http-code c402">402</div>
+              <p>Tổng chi phí chạm trần ngân sách ngày/tháng → dừng gọi LLM.</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- CP4 -->
+        <article class="chapter">
+          <div class="chapter-head">
+            <div>
+              <span class="cp-tag">CP4 · PART 5 · SCALING &amp; RELIABILITY</span>
+              <h3>Thiết kế Stateless trên 3 instance với Nginx &amp; Redis</h3>
+            </div>
+            <span class="status-chip">3 instances · 10/10 msgs</span>
+          </div>
+          <div class="chapter-body">
+            <p>Chạy <code>docker compose -p k5-day14-scaling up -d --build --scale agent=3</code> và kiểm thử bằng <code>test_stateless.py</code>. Cả 5 câu hỏi trong cùng một phiên <code>bd317508-...</code> được Nginx chia đều qua 3 container độc lập (<code>instance-604b6b</code>, <code>instance-97da3f</code>, <code>instance-61e702</code>), nhưng toàn bộ 10 tin nhắn lịch sử vẫn nguyên vẹn vì lưu chung trong Redis.</p>
+          </div>
+        </article>
+
+        <!-- CP5 -->
+        <article class="chapter">
+          <div class="chapter-head">
+            <div>
+              <span class="cp-tag">CP5 · PART 6 · FINAL PROJECT (60/120 ĐIỂM)</span>
+              <h3>Production Agent hoàn chỉnh — PASS 12/12 tiêu chí</h3>
+            </div>
+            <span class="status-chip">43/43 checks · 160 MB</span>
+          </div>
+          <div class="chapter-body">
+            <p>Hoàn thiện toàn bộ các module trong <code>06-lab-complete/</code> và vượt qua kịch bản chấm tự động <code>check_production_ready.py</code> ở môi trường POSIX + Docker (<code>docker stop</code> thoát êm với exit code <code>0</code> trong <code>1.0s</code>).</p>
+          </div>
+          <div class="check-grid">
+            <div class="check-pill"><span class="check-mark">✓</span>Dockerfile multi-stage (160 MB)</div>
+            <div class="check-pill"><span class="check-mark">✓</span>docker-compose (agent + redis)</div>
+            <div class="check-pill"><span class="check-mark">✓</span>.dockerignore chặn .env</div>
+            <div class="check-pill"><span class="check-mark">✓</span>GET /health → 200</div>
+            <div class="check-pill"><span class="check-mark">✓</span>GET /ready (503 khi mất Redis)</div>
+            <div class="check-pill"><span class="check-mark">✓</span>X-API-Key Auth (401/200)</div>
+            <div class="check-pill"><span class="check-mark">✓</span>Rate Limit Redis (429 bền vững)</div>
+            <div class="check-pill"><span class="check-mark">✓</span>Cost Guard Redis (402)</div>
+            <div class="check-pill"><span class="check-mark">✓</span>Config 100% từ Env Vars</div>
+            <div class="check-pill"><span class="check-mark">✓</span>Structured JSON Logging</div>
+            <div class="check-pill"><span class="check-mark">✓</span>Graceful Shutdown SIGTERM</div>
+            <div class="check-pill"><span class="check-mark">✓</span>railway.toml &amp; render.yaml</div>
+          </div>
+        </article>
+
+        <!-- CP6 -->
+        <article class="chapter">
+          <div class="chapter-head">
+            <div>
+              <span class="cp-tag">CP6 · PART 3 · CLOUD DEPLOYMENT</span>
+              <h3>Đưa Agent + Managed Redis lên Railway</h3>
+            </div>
+            <span class="status-chip">thungphasanh.up.railway.app</span>
+          </div>
+          <div class="chapter-body">
+            <p>Triển khai trực tiếp thư mục <code>06-lab-complete</code> trên Railway kèm dịch vụ Redis quản lý nội bộ, tiêm secrets qua Railway Variables (không commit lên Git) và xác minh đủ 4 lệnh CP6 (<code>200 / 200 / 401 / 200</code>).</p>
+          </div>
+          <div class="shot-grid">
+            <button type="button" class="shot-card" data-src="/assets/dashboard.png" data-caption="CP6 — Railway Dashboard & Service Variables (đã ẩn AGENT_API_KEY và REDIS_URL)">
+              <img class="shot-thumb" src="/assets/dashboard.png" alt="Railway dashboard và biến môi trường" loading="lazy" />
+              <div class="shot-cap">
+                <strong>dashboard.png</strong>
+                <span>Project Railway + Redis Online &amp; biến môi trường</span>
+              </div>
+            </button>
+            <button type="button" class="shot-card" data-src="/assets/running.png" data-caption="CP6 — Railway Deploy Logs: Uvicorn khởi chạy trên 0.0.0.0:8080 với structured JSON log">
+              <img class="shot-thumb" src="/assets/running.png" alt="Railway deploy logs đang chạy" loading="lazy" />
+              <div class="shot-cap">
+                <strong>running.png</strong>
+                <span>Service Online + Deploy Logs JSON</span>
+              </div>
+            </button>
+            <button type="button" class="shot-card" data-src="/assets/test.png" data-caption="CP6 — 4 lệnh kiểm tra trực tiếp lên Public URL trả về đúng 200 / 200 / 401 / 200">
+              <img class="shot-thumb" src="/assets/test.png" alt="Kết quả 4 lệnh curl CP6" loading="lazy" />
+              <div class="shot-cap">
+                <strong>test.png</strong>
+                <span>Xác minh thực tế: 200 · 200 · 401 · 200</span>
+              </div>
+            </button>
+          </div>
+        </article>
+
+        <!-- CP7 -->
+        <article class="chapter">
+          <div class="chapter-head">
+            <div>
+              <span class="cp-tag">CP7 · PART 7 BƯỚC 1 · BENCHMARK &amp; EVAL</span>
+              <h3>Đo Tail Latency (p95/p99) &amp; Quality Gate 23/23 câu</h3>
+            </div>
+            <span class="status-chip">v1 4.3% → v2 100.0%</span>
+          </div>
+          <div class="chapter-body">
+            <p>Chạy <code>load_test.py</code> ở 4 mức concurrency (<code>1, 10, 50, 100</code>) và 3 mức <code>MOCK_SLOW_RATE</code> để chứng minh vì sao latency trung bình che giấu nhóm người dùng bị chậm. Sau đó chạy <code>eval/run_eval.py</code> trên 23 câu hỏi golden dataset và bổ sung 2 mục <code>JWT</code>, <code>Kubernetes HPA</code> vào Knowledge Base.</p>
+          </div>
+
+          <!-- Interactive Tail Latency Visualizer -->
+          <div class="tail-box">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
+              <strong style="font-size:14px;">So sánh Tail Latency thực tế (300 requests, concurrency = 20)</strong>
+              <div class="seg-tabs" role="tablist" aria-label="Chọn tỉ lệ request chậm">
+                <button type="button" class="seg-btn active" data-slow="0">SLOW_RATE = 0</button>
+                <button type="button" class="seg-btn" data-slow="0.03">0.03 (mặc định)</button>
+                <button type="button" class="seg-btn" data-slow="0.1">0.1 (10% chậm)</button>
+              </div>
+            </div>
+            <div class="bar-group" style="margin-top:8px;">
+              <div>
+                <div class="bar-item-head"><span>Average latency</span><strong id="tail-avg-val">189.6 ms</strong></div>
+                <div class="bar-track"><div class="bar-fill" id="tail-avg-bar" style="width:11%;"></div></div>
+              </div>
+              <div>
+                <div class="bar-item-head"><span>p95 latency (SLO ≤ 500 ms)</span><strong id="tail-p95-val">229.8 ms · PASS</strong></div>
+                <div class="bar-track"><div class="bar-fill ok" id="tail-p95-bar" style="width:13.3%;"></div></div>
+              </div>
+              <div>
+                <div class="bar-item-head"><span>p99 latency (nhóm 1% chậm nhất)</span><strong id="tail-p99-val">236.4 ms</strong></div>
+                <div class="bar-track"><div class="bar-fill amber" id="tail-p99-bar" style="width:13.7%;"></div></div>
+              </div>
+            </div>
+            <p id="tail-note" style="margin-top:12px;font-size:13px;color:var(--muted);">
+              Khi không có request chậm bất thường, avg (189.6 ms), p95 (229.8 ms) và p99 (236.4 ms) sát nhau.
+            </p>
+          </div>
+
+          <!-- Eval Comparison Bars -->
+          <div class="bar-group">
+            <div>
+              <div class="bar-item-head"><span>Agent v1 (không retrieval · $0.00039975 / câu đúng)</span><strong>4.3% (1/23)</strong></div>
+              <div class="bar-track"><div class="bar-fill danger anim-bar" data-width="4.3%"></div></div>
+            </div>
+            <div>
+              <div class="bar-item-head"><span>Agent v2 (có RAG · $0.00003607 / câu đúng)</span><strong>91.3% (21/23)</strong></div>
+              <div class="bar-track"><div class="bar-fill anim-bar" data-width="91.3%"></div></div>
+            </div>
+            <div>
+              <div class="bar-item-head"><span>Agent v2 + bổ sung KB (JWT &amp; HPA · rẻ hơn ~11.6× / câu đúng)</span><strong>100.0% (23/23 · 0 regression)</strong></div>
+              <div class="bar-track"><div class="bar-fill ok anim-bar" data-width="100%"></div></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- CP8 -->
+        <article class="chapter">
+          <div class="chapter-head">
+            <div>
+              <span class="cp-tag">CP8 · PART 7 BƯỚC 2 · OBSERVABILITY &amp; CHAOS</span>
+              <h3>Prometheus, Grafana, Jaeger, Locust &amp; 5 thí nghiệm phá hệ thống</h3>
+            </div>
+            <span class="status-chip">4/4 alerts verified</span>
+          </div>
+          <div class="chapter-body">
+            <p>Dựng stack đầy đủ bằng Docker Compose: unit test alert rules (<code>promtool → SUCCESS</code>), benchmark Locust 100 users trong 2 phút cho thấy <code>scale=3</code> giảm <code>p95 /ask</code> từ <strong>340 ms → 260 ms</strong> so với <code>scale=1</code>, chặn <code>/metrics</code> tại Nginx (<code>404</code>), truy vết request chậm tới tận dòng JSON log và kích hoạt toàn bộ cảnh báo Chaos A–E.</p>
+          </div>
+
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Thí nghiệm</th>
+                  <th>Cấu hình phá hệ thống</th>
+                  <th>Alert kích hoạt</th>
+                  <th>Thời gian → Firing</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="mono">Exp A</td>
+                  <td class="mono">MOCK_ERROR_RATE=0.2</td>
+                  <td><span class="badge-fail">AgentHighErrorRate</span> (20.05%)</td>
+                  <td class="mono">90.6 s</td>
+                </tr>
+                <tr>
+                  <td class="mono">Exp B</td>
+                  <td class="mono">MOCK_SLOW_RATE=0.3</td>
+                  <td><span class="badge-fail">AgentHighLatencyP95</span> (1.895 s)</td>
+                  <td class="mono">150.8 s</td>
+                </tr>
+                <tr>
+                  <td class="mono">Exp C</td>
+                  <td class="mono">LLM_MODEL=mock-llm-large</td>
+                  <td><span class="badge-fail">LLMCostBurnRateHigh</span> ($16.59/h)</td>
+                  <td class="mono">150.4 s</td>
+                </tr>
+                <tr>
+                  <td class="mono">Exp D</td>
+                  <td class="mono">docker pause 1 agent</td>
+                  <td><span class="badge-fail">AgentInstanceDown</span> (up == 0)</td>
+                  <td class="mono">40.1 s</td>
+                </tr>
+                <tr>
+                  <td class="mono">Exp E</td>
+                  <td class="mono">AGENT_VERSION=v1</td>
+                  <td><span class="badge-pass">Không alert hạ tầng</span> → chỉ Eval bắt được</td>
+                  <td class="mono">N/A</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="trace-box">
+            <div class="trace-title">Log ↔ Trace correlation · trace_id = a64065927be4936321082574e15184d1 (chat mock-llm-small = 1694.8 ms / 1.7 s ≈ 99%)</div>
+            {"ts": "2026-11-26T08:00:40.802142+00:00", "level": "INFO", "service": "observable-agent", "instance": "cf19f6b9da0b", "event": "llm_call", "trace_id": "a64065927be4936321082574e15184d1", "span_id": "1654a7896e455d6c", "request_id": "95e0b08863a9", "model": "mock-llm-small", "agent_version": "v2", "input_tokens": 95, "output_tokens": 55, "cost_usd": 4.7e-05, "llm_ms": 1694.8}
+          </div>
+
+          <div class="shot-grid">
+            <button type="button" class="shot-card" data-src="/assets/grafana-dashboard.png" data-caption="CP8 — Grafana Day 14 Overview: 18.7 req/s, 0.68% error, p95 295.79 ms, 2 instances active">
+              <img class="shot-thumb" src="/assets/grafana-dashboard.png" alt="Grafana dashboard đang có tải" loading="lazy" />
+              <div class="shot-cap">
+                <strong>grafana-dashboard.png</strong>
+                <span>4 Golden Signals &amp; LLM metrics live</span>
+              </div>
+            </button>
+            <button type="button" class="shot-card" data-src="/assets/jaeger-slow-trace.png" data-caption="CP8 — Jaeger Slow Trace (a640659...): retrieval 16.7 ms, chat mock-llm-small 1.7 s (~99%)">
+              <img class="shot-thumb" src="/assets/jaeger-slow-trace.png" alt="Jaeger slow trace" loading="lazy" />
+              <div class="shot-cap">
+                <strong>jaeger-slow-trace.png</strong>
+                <span>Trace chậm 1.7 s chỉ rõ nút thắt tại LLM</span>
+              </div>
+            </button>
+            <button type="button" class="shot-card" data-src="/assets/jaeger-error-trace.png" data-caption="CP8 — Jaeger Error Trace (0d9c148...): HTTP 503 kèm exception event Upstream LLM error">
+              <img class="shot-thumb" src="/assets/jaeger-error-trace.png" alt="Jaeger error trace với exception event" loading="lazy" />
+              <div class="shot-cap">
+                <strong>jaeger-error-trace.png</strong>
+                <span>Trace lỗi 503 kèm sự kiện exception</span>
+              </div>
+            </button>
+            <button type="button" class="shot-card" data-src="/assets/prometheus-alert-firing.png" data-caption="CP8 — Prometheus Alerts: AgentHighErrorRate (20.05%) và AgentHighLatencyP95 (1.895s) cùng FIRING">
+              <img class="shot-thumb" src="/assets/prometheus-alert-firing.png" alt="Prometheus 2 alerts cùng firing" loading="lazy" />
+              <div class="shot-cap">
+                <strong>prometheus-alert-firing.png</strong>
+                <span>2 cảnh báo cùng lúc trạng thái FIRING</span>
+              </div>
+            </button>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Live API Test Bench -->
+  <section class="block" id="console">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="section-tag">03 · Bảng kiểm thử trực tiếp</div>
+          <h2 class="section-title">Gọi API thật của server đang chạy</h2>
+        </div>
+        <p class="section-desc">
+          Mọi nút dưới đây gửi HTTP request thực tới chính service FastAPI + Redis này. Không có API key nào được lưu trong mã nguồn trang web.
+        </p>
+      </div>
+
+      <div class="console-grid">
+        <div class="console-panel">
+          <div class="field-group">
+            <label for="api-key-input">X-API-Key (tự nhập key của bạn để gọi POST /ask)</label>
+            <input id="api-key-input" class="mono" type="password" placeholder="Nhập AGENT_API_KEY của bạn (bỏ trống để test lỗi 401)" autocomplete="off" />
+          </div>
+          <div class="field-group">
+            <label for="question-input">Câu hỏi gửi tới POST /ask</label>
+            <textarea id="question-input" rows="3">What is Docker deployment?</textarea>
+          </div>
+          <button type="button" class="btn-primary" id="btn-send-ask" style="width:100%;justify-content:center;">
+            Gửi POST /ask
+          </button>
+          <div class="quick-btns">
+            <button type="button" class="btn-mini" id="btn-test-health">GET /health</button>
+            <button type="button" class="btn-mini" id="btn-test-ready">GET /ready</button>
+            <button type="button" class="btn-mini" id="btn-test-401">POST /ask (không key → 401)</button>
+          </div>
+        </div>
+
+        <div class="console-output" aria-live="polite">
+          <div class="console-meta">
+            <span id="out-endpoint">Sẵn sàng kiểm thử</span>
+            <span id="out-status">HTTP —</span>
+          </div>
+          <pre class="console-pre" id="out-body">// Bấm một nút bên trái để xem phản hồi JSON thực tế từ server,
+// mã HTTP (200 / 401 / 429 / 402), và thời gian phản hồi (ms).</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <div><strong>Do Hoang Vu</strong> · MSSV <code>2A202603920</code> · Lớp <code>K5-L3B</code> · AICB-P1 Day 14</div>
+      <div style="display:flex;gap:16px;">
+        <a href="/docs">Swagger /docs</a>
+        <a href="/health">/health</a>
+        <a href="/ready">/ready</a>
+        <a href="https://github.com/hoangvu1806/K5-L3B-DAY14-DoHoangVu-2A202603920-Deployment-Benchmark-Observability" target="_blank" rel="noopener">GitHub Repo ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Lightbox Modal -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-caption">
+    <div class="lightbox-inner">
+      <div class="lightbox-bar">
+        <span id="lightbox-caption"></span>
+        <button type="button" class="lightbox-close" id="lightbox-close">Đóng (Esc)</button>
+      </div>
+      <img class="lightbox-img" id="lightbox-img" alt="" />
+    </div>
+  </div>
+
+  <script>
+    // ── 1. Stack Explorer Data ────────────────────────────
+    const STACK_ITEMS = [
+      {
+        id: "fastapi",
+        layer: "Application",
+        name: "FastAPI + Uvicorn",
+        brief: "Khung tạo API async và ASGI server chạy 2 worker.",
+        what: "Xây dựng các endpoint /health, /ready, /ask với xác thực đầu vào bằng Pydantic, ghi log JSON cho mọi request và hỗ trợ tắt êm khi nhận SIGTERM.",
+        why: "Trong production cần tách rõ HTTP validation (422), lỗi bảo mật (401/429/402) và xử lý nhiều request đồng thời mà không chặn event loop.",
+        metric: "Thực tế lab: chạy --workers 2, thoát SIGTERM với exit code 0 trong 1.0s."
+      },
+      {
+        id: "docker",
+        layer: "Packaging",
+        name: "Docker Multi-stage",
+        brief: "Đóng gói môi trường đồng nhất, gọn nhẹ & non-root.",
+        what: "Stage builder cài compiler/packages; stage runtime chỉ copy kết quả sang python:3.11-slim, chạy dưới quyền user appuser và gắn HEALTHCHECK.",
+        why: "Xóa bỏ vấn đề 'chạy trên máy em thì được', thu nhỏ image để deploy nhanh và giảm bề mặt tấn công bảo mật.",
+        metric: "Part 2: 1.15 GB → 163 MB (−85.9%) · Part 6 final image: 160 MB (< 500 MB)."
+      },
+      {
+        id: "redis",
+        layer: "Shared State",
+        name: "Redis",
+        brief: "Bộ nhớ chung siêu nhanh cho mọi instance.",
+        what: "Lưu cửa sổ trượt Rate Limit (Sorted Set ZADD/ZCARD), cộng dồn chi phí LLM (INCRBYFLOAT) và lịch sử hội thoại.",
+        why: "Giúp ứng dụng hoàn toàn Stateless: dù scale lên 3 instance hay restart server, bộ đếm 429 và phiên chat không bị mất.",
+        metric: "CP5 kiểm tra restart agent vẫn trả 429 · CP6 kết nối Redis nội bộ Railway (/ready → 200)."
+      },
+      {
+        id: "nginx",
+        layer: "Edge / LB",
+        name: "Nginx",
+        brief: "Cổng điều phối tải & tường chắn bảo mật.",
+        what: "Phân phối request đều (round-robin) tới nhiều container agent, bổ sung security headers và chặn truy cập /metrics từ bên ngoài.",
+        why: "Client chỉ cần gọi 1 địa chỉ duy nhất, không lộ hạ tầng nội bộ và tự động bỏ qua instance lỗi.",
+        metric: "CP8: chia đều ~9.49 vs 9.58 req/s cho 2 instance; GET :8080/metrics → 404."
+      },
+      {
+        id: "railway",
+        layer: "Cloud PaaS",
+        name: "Railway",
+        brief: "Nền tảng cloud chạy container 24/7 + HTTPS.",
+        what: "Tự đọc 06-lab-complete/Dockerfile & railway.toml, cấp domain HTTPS công khai, tiêm biến PORT động và liên kết service Redis.",
+        why: "Đưa agent từ laptop ra Internet thật với auto-deploy từ GitHub và quản lý secrets tách biệt khỏi source code.",
+        metric: "Live tại thungphasanh.up.railway.app — xác minh đủ 200 / 200 / 401 / 200."
+      },
+      {
+        id: "locust",
+        layer: "Load Test",
+        name: "Locust",
+        brief: "Giả lập 100 người dùng đồng thời để đo sức tải.",
+        what: "Chạy headless 100 users / ramp 10 trong 2 phút, xuất file CSV thống kê RPS, p50, p95, p99 và tỉ lệ lỗi.",
+        why: "Đo xem scale ngang 1 → 3 instance cải thiện độ trễ ở đâu và đâu là nút thắt thực sự (API hay LLM).",
+        metric: "Scale 1 → 3 container giảm p95 /ask từ 340 ms xuống 260 ms (p99 giữ 1700 ms do LLM)."
+      },
+      {
+        id: "prometheus",
+        layer: "Metrics & Alerts",
+        name: "Prometheus",
+        brief: "Thu thập chỉ số định kỳ & đánh giá luật báo động.",
+        what: "Scrape /metrics của từng container qua Docker DNS, tính histogram_quantile(0.95) và kiểm tra 4 alert rules mỗi chu kỳ.",
+        why: "Phát hiện sớm khi error rate, latency p95, chi phí hoặc sức khỏe instance vượt ngưỡng SLO kéo dài.",
+        metric: "promtool test rules PASS · Kích hoạt thành công cả 4 alert trong Chaos A–D."
+      },
+      {
+        id: "grafana",
+        layer: "Visualization",
+        name: "Grafana",
+        brief: "Bảng đồng hồ trực quan theo 4 Golden Signals.",
+        what: "Hiển thị Traffic, Error rate, Latency p50/p95/p99/avg, Saturation (in-flight), Tokens/s và Cost burn rate ($/giờ).",
+        why: "Giúp kỹ sư nhìn một màn hình nắm ngay tình trạng toàn hệ thống thay vì đọc hàng nghìn dòng log.",
+        metric: "Ghi nhận live dưới tải 30 users: 18.7 req/s, 0.68% lỗi, p95 295.79 ms."
+      },
+      {
+        id: "jaeger",
+        layer: "Tracing",
+        name: "OpenTelemetry + Jaeger",
+        brief: "Quay chậm từng bước của một request để tìm nút thắt.",
+        what: "Ghi lại cây span (POST /ask → agent.run → retrieve_context → chat mock-llm) và gắn trace_id đồng nhất vào JSON log.",
+        why: "Biết chính xác chậm do code của mình hay do LLM bên ngoài, và thấy ngay stacktrace exception của lỗi 503.",
+        metric: "Trace chậm a640659...: retrieval chỉ 16.7 ms, LLM chiếm 1694.8 ms (~99%)."
+      }
+    ];
+
+    const stackNodesEl = document.getElementById("stack-nodes");
+    const inspectorEl = document.getElementById("stack-inspector");
+
+    function renderInspector(item) {
+      inspectorEl.innerHTML = `
+        <span class="inspector-badge">${item.layer}</span>
+        <h3>${item.name}</h3>
+        <div class="inspector-section">
+          <h4>Nó làm gì trong hệ thống?</h4>
+          <p>${item.what}</p>
+        </div>
+        <div class="inspector-section">
+          <h4>Vì sao bắt buộc cần?</h4>
+          <p>${item.why}</p>
+        </div>
+        <div class="inspector-metric">${item.metric}</div>
+      `;
+    }
+
+    STACK_ITEMS.forEach((item, idx) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "stack-node" + (idx === 0 ? " active" : "");
+      btn.setAttribute("role", "tab");
+      btn.setAttribute("aria-selected", idx === 0 ? "true" : "false");
+      btn.innerHTML = `<span class="layer">${item.layer}</span><span class="name">${item.name}</span><span class="brief">${item.brief}</span>`;
+      btn.addEventListener("click", () => {
+        stackNodesEl.querySelectorAll(".stack-node").forEach((el) => {
+          el.classList.remove("active");
+          el.setAttribute("aria-selected", "false");
+        });
+        btn.classList.add("active");
+        btn.setAttribute("aria-selected", "true");
+        renderInspector(item);
+        if (window.gsap && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          gsap.fromTo(inspectorEl, { y: 8, opacity: 0.7 }, { y: 0, opacity: 1, duration: 0.28, ease: "power2.out" });
+        }
+      });
+      stackNodesEl.appendChild(btn);
+    });
+    renderInspector(STACK_ITEMS[0]);
+
+    // ── 2. Live Production Telemetry (/health & /ready) ───
+    async function probeEndpoint(path) {
+      const t0 = performance.now();
+      try {
+        const res = await fetch(path, { cache: "no-store" });
+        const ms = Math.round(performance.now() - t0);
+        const data = await res.json();
+        return { ok: res.ok, status: res.status, ms, data };
+      } catch (err) {
+        return { ok: false, status: 0, ms: Math.round(performance.now() - t0), data: { error: String(err) } };
+      }
+    }
+
+    async function refreshTelemetry() {
+      const [h, r] = await Promise.all([probeEndpoint("/health"), probeEndpoint("/ready")]);
+
+      const dotH = document.getElementById("dot-health");
+      const dotR = document.getElementById("dot-ready");
+      dotH.className = "dot " + (h.ok ? "ok" : "err");
+      dotR.className = "dot " + (r.ok ? "ok" : "err");
+
+      document.getElementById("health-ms").textContent = `${h.ms} ms`;
+      const hCode = document.getElementById("health-code");
+      hCode.textContent = `HTTP ${h.status}`;
+      hCode.className = "probe-val " + (h.ok ? "ok" : "err");
+      document.getElementById("health-sub").textContent = h.ok
+        ? `env: ${h.data.environment} · uptime: ${h.data.uptime_seconds}s`
+        : "Không phản hồi";
+
+      document.getElementById("ready-ms").textContent = `${r.ms} ms`;
+      const rCode = document.getElementById("ready-code");
+      rCode.textContent = `HTTP ${r.status}`;
+      rCode.className = "probe-val " + (r.ok ? "ok" : "err");
+      document.getElementById("ready-sub").textContent = r.ok
+        ? `redis: ${r.data.redis || "ok"}`
+        : (r.data.detail || "Redis chưa kết nối");
+
+      document.getElementById("hero-live-json").textContent = JSON.stringify(
+        { health: h.data, ready: r.data },
+        null,
+        2
+      );
+    }
+    refreshTelemetry();
+
+    // ── 3. Interactive Tail Latency Switcher (Real Data) ──
+    const TAIL_DATA = {
+      "0": {
+        avg: 189.6, p95: 229.8, p99: 236.4, slo: "PASS", p95Class: "ok",
+        note: "Khi không có request chậm bất thường, avg (189.6 ms), p95 (229.8 ms) và p99 (236.4 ms) rất sát nhau."
+      },
+      "0.03": {
+        avg: 261.2, p95: 262.4, p99: 1695.0, slo: "PASS", p95Class: "ok",
+        note: "Chỉ 3% request chậm: avg trông vẫn đẹp (261.2 ms), nhưng p99 đã vọt lên 1695.0 ms — trung bình hoàn toàn che giấu nhóm người dùng chờ gần 2 giây."
+      },
+      "0.1": {
+        avg: 327.0, p95: 1694.7, p99: 1724.3, slo: "FAIL", p95Class: "danger",
+        note: "Ở mức 10% request chậm (> 5%): avg mới tăng lên 327.0 ms, nhưng cả p95 cũng vọt lên 1694.7 ms và phá vỡ SLO ≤ 500 ms."
+      }
+    };
+
+    document.querySelectorAll(".seg-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".seg-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const d = TAIL_DATA[btn.dataset.slow];
+        const maxMs = 1800;
+        document.getElementById("tail-avg-val").textContent = `${d.avg} ms`;
+        document.getElementById("tail-p95-val").textContent = `${d.p95} ms · ${d.slo}`;
+        document.getElementById("tail-p99-val").textContent = `${d.p99} ms`;
+        document.getElementById("tail-note").textContent = d.note;
+
+        const p95Bar = document.getElementById("tail-p95-bar");
+        p95Bar.className = "bar-fill " + d.p95Class;
+
+        const avgW = Math.min(100, (d.avg / maxMs) * 100) + "%";
+        const p95W = Math.min(100, (d.p95 / maxMs) * 100) + "%";
+        const p99W = Math.min(100, (d.p99 / maxMs) * 100) + "%";
+
+        if (window.gsap && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          gsap.to("#tail-avg-bar", { width: avgW, duration: 0.45, ease: "power2.out" });
+          gsap.to("#tail-p95-bar", { width: p95W, duration: 0.45, ease: "power2.out" });
+          gsap.to("#tail-p99-bar", { width: p99W, duration: 0.45, ease: "power2.out" });
+        } else {
+          document.getElementById("tail-avg-bar").style.width = avgW;
+          p95Bar.style.width = p95W;
+          document.getElementById("tail-p99-bar").style.width = p99W;
+        }
+      });
+    });
+
+    // ── 4. Lightbox for Real Screenshots ──────────────────
+    const lightbox = document.getElementById("lightbox");
+    const lbImg = document.getElementById("lightbox-img");
+    const lbCap = document.getElementById("lightbox-caption");
+
+    function closeLightbox() { lightbox.classList.remove("open"); }
+
+    document.querySelectorAll(".shot-card").forEach((card) => {
+      card.addEventListener("click", () => {
+        lbImg.src = card.dataset.src;
+        lbImg.alt = card.dataset.caption;
+        lbCap.textContent = card.dataset.caption;
+        lightbox.classList.add("open");
+      });
+    });
+
+    document.getElementById("lightbox-close").addEventListener("click", closeLightbox);
+    lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLightbox(); });
+
+    // ── 5. Live API Console ───────────────────────────────
+    const outEp = document.getElementById("out-endpoint");
+    const outSt = document.getElementById("out-status");
+    const outBody = document.getElementById("out-body");
+
+    async function callConsole(method, path, headers = {}, body = null) {
+      outEp.textContent = `${method} ${path}`;
+      outSt.textContent = "Đang gọi...";
+      const t0 = performance.now();
+      try {
+        const res = await fetch(path, {
+          method,
+          headers,
+          body: body ? JSON.stringify(body) : undefined,
+        });
+        const ms = Math.round(performance.now() - t0);
+        const retryAfter = res.headers.get("retry-after");
+        let parsed;
+        try { parsed = await res.json(); } catch { parsed = await res.text(); }
+        outSt.textContent = `HTTP ${res.status} · ${ms} ms` + (retryAfter ? ` · Retry-After: ${retryAfter}s` : "");
+        outSt.style.color = res.ok ? "#6EE7B7" : (res.status === 429 ? "#FBBF24" : "#FDA4AF");
+        outBody.textContent = typeof parsed === "string" ? parsed : JSON.stringify(parsed, null, 2);
+      } catch (err) {
+        outSt.textContent = "Lỗi kết nối";
+        outSt.style.color = "#FDA4AF";
+        outBody.textContent = String(err);
+      }
+    }
+
+    document.getElementById("btn-test-health").addEventListener("click", () => callConsole("GET", "/health"));
+    document.getElementById("btn-test-ready").addEventListener("click", () => callConsole("GET", "/ready"));
+    document.getElementById("btn-test-401").addEventListener("click", () => {
+      const q = document.getElementById("question-input").value.trim() || "Hello";
+      callConsole("POST", "/ask", { "Content-Type": "application/json" }, { question: q });
+    });
+    document.getElementById("btn-send-ask").addEventListener("click", () => {
+      const key = document.getElementById("api-key-input").value.trim();
+      const q = document.getElementById("question-input").value.trim() || "Hello";
+      const headers = { "Content-Type": "application/json" };
+      if (key) headers["X-API-Key"] = key;
+      callConsole("POST", "/ask", headers, { question: q, user_id: "web-visitor" });
+    });
+
+    // ── 6. GSAP Motion (Orchestrated & Restraint-first) ───
+    window.addEventListener("DOMContentLoaded", () => {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced || !window.gsap) {
+        document.querySelectorAll(".anim-bar").forEach((b) => { b.style.width = b.dataset.width; });
+        document.getElementById("timeline-rail-fill").style.height = "100%";
+        return;
+      }
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Hero orchestrated entrance
+      gsap.from(".hero-reveal", {
+        y: 22,
+        opacity: 0,
+        duration: 0.72,
+        stagger: 0.09,
+        ease: "power3.out",
+        clearProps: "transform,opacity"
+      });
+
+      // Scrubbed vertical drafting spine across CP1–CP8
+      gsap.to("#timeline-rail-fill", {
+        height: "100%",
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#timeline",
+          start: "top 65%",
+          end: "bottom 75%",
+          scrub: 0.35
+        }
+      });
+
+      // Clean chapter entrance
+      gsap.utils.toArray(".chapter").forEach((card) => {
+        gsap.from(card, {
+          y: 24,
+          opacity: 0,
+          duration: 0.6,
+          ease: "power2.out",
+          clearProps: "transform,opacity",
+          scrollTrigger: {
+            trigger: card,
+            start: "top 86%",
+            once: true
+          }
+        });
+      });
+
+      // Animated metric bars (Docker size & Eval progression)
+      gsap.utils.toArray(".anim-bar").forEach((bar) => {
+        gsap.to(bar, {
+          width: bar.dataset.width,
+          duration: 0.9,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: bar,
+            start: "top 90%",
+            once: true
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
