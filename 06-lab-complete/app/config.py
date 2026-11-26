@@ -15,6 +15,12 @@ class Settings:
     environment: str = field(default_factory=lambda: os.getenv("ENVIRONMENT", "development"))
     debug: bool = field(default_factory=lambda: os.getenv("DEBUG", "false").lower() == "true")
     agent_api_key: str = field(default_factory=lambda: os.getenv("AGENT_API_KEY", ""))
+    jwt_secret: str = field(
+        default_factory=lambda: os.getenv("JWT_SECRET") or os.getenv("AGENT_API_KEY", "")
+    )
+    jwt_expire_minutes: int = field(
+        default_factory=lambda: int(os.getenv("JWT_EXPIRE_MINUTES", "60"))
+    )
     redis_url: str = field(default_factory=lambda: os.getenv("REDIS_URL", "redis://localhost:6379/0"))
     rate_limit_per_minute: int = field(
         default_factory=lambda: int(os.getenv("RATE_LIMIT_PER_MINUTE", "10"))

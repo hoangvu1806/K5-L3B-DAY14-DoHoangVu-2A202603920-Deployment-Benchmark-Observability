@@ -1800,19 +1800,32 @@
 
       <div class="console-grid">
         <div class="console-card glass">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="field">
+              <label for="jwt-user-input">Bước 1 · Username</label>
+              <input id="jwt-user-input" class="mono" type="text" value="hoangvu" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="jwt-pass-input">Passcode (đổi lấy JWT)</label>
+              <input id="jwt-pass-input" class="mono" type="password" placeholder="Nhập passcode..." autocomplete="off" />
+            </div>
+          </div>
+          <button type="button" class="chip-btn" id="btn-login" style="width:100%;justify-content:center;padding:11px 16px;font-weight:600;color:var(--accent-deep);background:var(--accent-glow);">Đăng nhập &amp; cấp JWT (POST /auth/token)</button>
+
           <div class="field">
-            <label for="api-key-input">X-API-Key (tự nhập để nhận 200, bỏ trống để test 401)</label>
-            <input id="api-key-input" class="mono" type="password" placeholder="Nhập AGENT_API_KEY của bạn..." autocomplete="off" />
+            <label for="jwt-token-input">Bước 2 · Authorization: Bearer &lt;JWT&gt; (bỏ trống để test 401)</label>
+            <input id="jwt-token-input" class="mono" type="text" placeholder="eyJhbGciOiJIUzI1NiIs..." autocomplete="off" />
           </div>
           <div class="field">
             <label for="question-input">Câu hỏi gửi tới POST /ask</label>
-            <textarea id="question-input" rows="3">What is Docker deployment?</textarea>
+            <textarea id="question-input" rows="2">What is Docker deployment?</textarea>
           </div>
-          <button type="button" class="btn-primary" id="btn-ask" style="width:100%;justify-content:center;">Gửi POST /ask</button>
+          <button type="button" class="btn-primary" id="btn-ask" style="width:100%;justify-content:center;">Gửi POST /ask bằng JWT</button>
           <div class="quick-row">
             <button type="button" class="chip-btn" id="btn-h">GET /health</button>
             <button type="button" class="chip-btn" id="btn-r">GET /ready</button>
-            <button type="button" class="chip-btn" id="btn-401">Test không key → 401</button>
+            <button type="button" class="chip-btn" id="btn-401">Test không JWT → 401</button>
+            <button type="button" class="chip-btn" id="btn-bad-jwt">Test JWT sai → 401</button>
           </div>
         </div>
 
@@ -1821,8 +1834,9 @@
             <span id="out-ep">Sẵn sàng nhận lệnh</span>
             <span id="out-st">HTTP —</span>
           </div>
-          <pre class="screen-pre" id="out-pre">// Bấm một nút bên trái để gọi thẳng tới server live
-// và xem JSON trả về, mã HTTP (200 / 401 / 429 / 402) cùng thời gian phản hồi.</pre>
+          <pre class="screen-pre" id="out-pre">// Bước 1: Nhập username + passcode → bấm Cấp JWT (POST /auth/token)
+// Bước 2: Gửi POST /ask với header Authorization: Bearer &lt;JWT&gt;
+// để kiểm chứng 200 OK, 401 Unauthorized, 429 Rate Limit và 402 Budget.</pre>
         </div>
       </div>
     </div>
@@ -2063,16 +2077,49 @@
 
     document.getElementById("btn-h").addEventListener("click", () => runApi("GET", "/health"));
     document.getElementById("btn-r").addEventListener("click", () => runApi("GET", "/ready"));
+    document.getElementById("btn-login").addEventListener("click", async () => {
+      const username = document.getElementById("jwt-user-input").value.trim() || "hoangvu";
+      const passcode = document.getElementById("jwt-pass-input").value.trim();
+      outEp.textContent = "POST /auth/token";
+      outSt.textContent = "Đang ký JWT...";
+      const t0 = performance.now();
+      try {
+        const res = await fetch("/auth/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, passcode })
+        });
+        const ms = Math.round(performance.now() - t0);
+        const payload = await res.json();
+        outSt.textContent = `HTTP ${res.status} · ${ms} ms`;
+        outSt.style.color = res.ok ? "#6EE7B7" : "#FDA4AF";
+        outPre.textContent = JSON.stringify(payload, null, 2);
+        if (res.ok && payload.access_token) {
+          document.getElementById("jwt-token-input").value = payload.access_token;
+        }
+      } catch (err) {
+        outSt.textContent = "Lỗi kết nối";
+        outSt.style.color = "#FDA4AF";
+        outPre.textContent = String(err);
+      }
+    });
     document.getElementById("btn-401").addEventListener("click", () => {
       const q = document.getElementById("question-input").value.trim() || "Hello";
       runApi("POST", "/ask", { "Content-Type": "application/json" }, { question: q });
     });
+    document.getElementById("btn-bad-jwt").addEventListener("click", () => {
+      const q = document.getElementById("question-input").value.trim() || "Hello";
+      runApi("POST", "/ask", {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer invalid.jwt.token"
+      }, { question: q });
+    });
     document.getElementById("btn-ask").addEventListener("click", () => {
-      const key = document.getElementById("api-key-input").value.trim();
+      const token = document.getElementById("jwt-token-input").value.trim();
       const q = document.getElementById("question-input").value.trim() || "Hello";
       const h = { "Content-Type": "application/json" };
-      if (key) h["X-API-Key"] = key;
-      runApi("POST", "/ask", h, { question: q, user_id: "web-visitor" });
+      if (token) h["Authorization"] = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+      runApi("POST", "/ask", h, { question: q });
     });
 
     // ── 7. GSAP Choreography ──────────────────────────────

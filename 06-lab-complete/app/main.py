@@ -12,7 +12,7 @@ from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 
-from app.auth import verify_api_key
+from app.auth import authenticate_for_token, verify_auth
 from app.config import settings
 from app.cost_guard import check_budget, record_cost
 from app.rate_limiter import check_rate_limit
@@ -106,6 +106,11 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
     return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 
+class TokenRequest(BaseModel):
+    username: str = Field(..., min_length=1, max_length=64)
+    passcode: str = Field(..., min_length=1, max_length=256)
+
+
 class AskRequest(BaseModel):
     question: str = Field(..., min_length=1, max_length=2000)
     user_id: str | None = Field(default="anonymous", max_length=128)
@@ -162,10 +167,18 @@ def ready():
     return {"status": "ready", "redis": "ok"}
 
 
+@app.post("/auth/token")
+def issue_token(body: TokenRequest):
+    """Issue a signed HS256 JWT token for Bearer authentication on /ask."""
+    token_data = authenticate_for_token(body.username, body.passcode)
+    log_event("jwt_issued", sub=token_data["claims"]["sub"], role=token_data["claims"]["role"])
+    return token_data
+
+
 @app.post("/ask")
-def ask(body: AskRequest, api_key: str = Depends(verify_api_key)):
-    """Protected agent endpoint: auth → rate limit → cost guard → LLM → record cost."""
-    check_rate_limit(api_key)
+def ask(body: AskRequest, caller: dict = Depends(verify_auth)):
+    """Protected agent endpoint: JWT/API-Key auth → rate limit → cost guard → LLM → record cost."""
+    check_rate_limit(caller["identity"])
     check_budget()
 
     answer = llm_ask(body.question)
@@ -173,9 +186,13 @@ def ask(body: AskRequest, api_key: str = Depends(verify_api_key)):
     output_tokens = max(1, len(answer) // 4)
     cost = record_cost(input_tokens, output_tokens)
 
+    effective_user = caller["sub"] if caller["auth_type"] == "jwt" else body.user_id
+
     log_event(
         "ask_completed",
-        user_id=body.user_id,
+        auth_type=caller["auth_type"],
+        user_id=effective_user,
+        role=caller["role"],
         input_tokens=input_tokens,
         output_tokens=output_tokens,
         cost_usd=round(cost, 8),
@@ -183,7 +200,12 @@ def ask(body: AskRequest, api_key: str = Depends(verify_api_key)):
     return {
         "question": body.question,
         "answer": answer,
-        "user_id": body.user_id,
+        "user_id": effective_user,
+        "auth": {
+            "type": caller["auth_type"],
+            "sub": caller["sub"],
+            "role": caller["role"],
+        },
         "usage": {
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
